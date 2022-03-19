@@ -1,0 +1,9 @@
+name: TheKingsFall
+version: 0.1
+author: SYTHM.
+main: fr.sythm.thekingsfall.Main
+commands:
+  speed:
+    description: Change the player speed
+    permission: speed.use
+api-version: 1.16
