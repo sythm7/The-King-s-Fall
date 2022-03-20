@@ -6,4 +6,12 @@ commands:
   speed:
     description: Change the player speed
     permission: speed.use
+  territory:
+    description: Create or remove a territory
+    permission: territory.use
+    aliases: ter
+  spectate:
+    description: Spectate a player
+    permission: spectate.use
+    aliases: spec
 api-version: 1.16
