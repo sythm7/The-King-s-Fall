@@ -1,5 +1,7 @@
 package fr.sythm.thekingsfall;
 
+import java.util.Set;
+
 import org.bukkit.Location;
 
 import fr.sythm.utils.Couple;
@@ -32,23 +34,12 @@ public class Territory {
 		this.teamColor = teamColor;
 	}
 	
-	public boolean equals(Object obj) {
+	public boolean isOverriding(Set<Territory> territoriesList) {
 		
-		if(! (obj instanceof Territory))
-			return false;
+		for(Territory territory : territoriesList) {
+			
+		}
 		
-		Territory territory = (Territory) obj;
-		
-		Couple<Integer, Integer> thisAreaFirst = new Couple<>(this.areaCoordinates.getFirstElement().getBlockX(), this.areaCoordinates.getFirstElement().getBlockZ());
-
-		Couple<Integer, Integer> thisAreaSecond = new Couple<>(this.areaCoordinates.getSecondElement().getBlockX(), this.areaCoordinates.getSecondElement().getBlockZ());
-		
-		Couple<Integer, Integer> otherAreaFirst = new Couple<>(this.areaCoordinates.getFirstElement().getBlockX(), this.areaCoordinates.getFirstElement().getBlockZ());
-
-		Couple<Integer, Integer> otherAreaSecond = new Couple<>(this.areaCoordinates.getSecondElement().getBlockX(), this.areaCoordinates.getSecondElement().getBlockZ());
-
-		// TODO Non terminé : à finaliser.
 		return false;
-		
 	}
 }

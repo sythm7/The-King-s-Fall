@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 
 import fr.sythm.thekingsfall.Territory;
 import fr.sythm.utils.Couple;
+import fr.sythm.utils.TerritoriesUtils;
 
 public class CommandTerritory implements CommandExecutor {
 	
@@ -55,8 +56,6 @@ public class CommandTerritory implements CommandExecutor {
 		
 		Couple<Location, Location> area = this.playersPositionsMap.get(player);
 		
-		System.out.println("coucou");
-		
 		if(area == null || area.getFirstElement() == null || area.getSecondElement() == null) {
 			player.sendMessage(ChatColor.RED + "You need to select an area first !");
 			return false;
@@ -64,16 +63,14 @@ public class CommandTerritory implements CommandExecutor {
 		
 		this.territoriesList.add(new Territory(area));
 		
-		player.sendMessage(ChatColor.GREEN + "New territory successfully created from (" + area.getFirstElement().getBlockX() + ", ~, " 
-				+ area.getFirstElement().getBlockZ() + ") to (" + area.getSecondElement().getBlockX() + ", ~, "
-				+ area.getSecondElement().getBlockZ() + ").");
+		player.sendMessage(ChatColor.GREEN + "New territory successfully created from " + this.formatAreas(area.getFirstElement(), area.getSecondElement()) + ".");
 
 		return true;
 	}
 	
 	public boolean removeTerritory(Player player) {
 		
-		Territory territory = this.getTerritory(player);
+		Territory territory = TerritoriesUtils.getTerritory(player.getLocation(), this.territoriesList);
 		
 		if(territory == null) {
 			player.sendMessage(ChatColor.RED + "You are not in a territory !");
@@ -82,71 +79,31 @@ public class CommandTerritory implements CommandExecutor {
 		
 		this.territoriesList.remove(territory);
 		
-		player.sendMessage(ChatColor.GREEN + "Territory from (" + territory.getAreaCoordinates().getFirstElement().getBlockX() + ", ~, " + 
-				territory.getAreaCoordinates().getFirstElement().getBlockZ() + ") to (" + territory.getAreaCoordinates().getSecondElement().getBlockX() + ", ~, " + 
-				territory.getAreaCoordinates().getSecondElement().getBlockZ() + ") successfully removed.");
+		player.sendMessage(ChatColor.GREEN + "Territory from " + this.formatAreas(territory.getAreaCoordinates().getFirstElement(),
+				territory.getAreaCoordinates().getSecondElement())
+		+ " succesfully removed.");
 		
 		return true;
 	}
 	
 	public boolean displayTerritory(Player player) {
 		
-		Territory territory = this.getTerritory(player);
+		Territory territory = TerritoriesUtils.getTerritory(player.getLocation(), this.territoriesList);
 		if(territory == null) {
 			player.sendMessage(ChatColor.RED + "You are not in a territory !");
 			return false;
 		}
 		
-		player.sendMessage(ChatColor.GREEN + "You are currently in the territory from (" + territory.getAreaCoordinates().getFirstElement().getBlockX() + ", ~, " + 
-				territory.getAreaCoordinates().getFirstElement().getBlockZ() + ") to (" + territory.getAreaCoordinates().getSecondElement().getBlockX() + ", ~, " + 
-				territory.getAreaCoordinates().getSecondElement().getBlockZ() + ").");
+		player.sendMessage(ChatColor.GREEN + "You are currently in the territory from " + 
+		this.formatAreas(territory.getAreaCoordinates().getFirstElement(), 
+				territory.getAreaCoordinates().getSecondElement()) + ".");
 		
 		return true;
 	}
 		
-	public Territory getTerritory(Player player) {
-		
-		for(Territory territory : this.territoriesList) {
-			
-			Couple<Location, Location> area = territory.getAreaCoordinates();
-			Location first = area.getFirstElement();
-			int firstX = first.getBlockX();
-			int firstZ = first.getBlockZ();
-			
-			Location second = area.getSecondElement();
-			int secondX = second.getBlockX();
-			int secondZ = second.getBlockZ();
-			
-			Location playerLocation = player.getLocation();
-			int playerX = playerLocation.getBlockX();
-			int playerZ = playerLocation.getBlockZ();
-			
-			int directionX = 0;
-			int directionZ = 0;
-			
-			if(firstX < secondX && firstZ < secondZ) {
-				directionX = 1;
-				directionZ = 1;
-			}
-			else if(firstX < secondX && firstZ > secondZ) {
-				directionX = 1;
-				directionZ = -1;
-			}
-			else if(firstX > secondX && firstZ < secondZ) {
-				directionX = -1;
-				directionZ = 1;
-			}
-			else if(firstX > secondX && firstZ > secondZ) {
-				directionX = -1;
-				directionZ = -1;
-			}
-			
-			if(firstX * directionX < playerX * directionX && playerX * directionX < secondX * directionX && firstZ * directionZ < playerZ * directionZ && playerZ * directionZ < secondZ * directionZ)
-				return territory;
-			
-		}
-		
-		return null;
-		
+	
+	public String formatAreas(Location l1, Location l2) {
+		return "(" + l1.getBlockX() + ", ~, " + l1.getBlockZ() + ") to "
+				+ "(" + l2.getBlockX() + ", ~, " + l2.getBlockZ() + ")";
 	}
 }
