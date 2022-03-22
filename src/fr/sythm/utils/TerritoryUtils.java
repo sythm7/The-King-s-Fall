@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 
 import fr.sythm.thekingsfall.Territory;
 
-public class TerritoriesUtils {
+public class TerritoryUtils {
 
 	
 	public static Territory getTerritory(Location location, Set<Territory> territoriesList) {

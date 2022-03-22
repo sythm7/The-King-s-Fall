@@ -6,6 +6,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import net.md_5.bungee.api.ChatColor;
+
 public class CommandSpectate implements CommandExecutor {
 
 	@Override
@@ -21,6 +23,11 @@ public class CommandSpectate implements CommandExecutor {
 		player.setGameMode(GameMode.SPECTATOR);
 		
 		Player targetPlayer = sender.getServer().getPlayer(playerName);
+		
+		if(targetPlayer == null) {
+			player.sendMessage(ChatColor.RED + "Target player is null.");
+			return false;
+		}
 		
 		player.teleport(targetPlayer);
 		
