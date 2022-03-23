@@ -151,6 +151,7 @@ public class MyPluginListeners implements Listener {
 		if(chosenPlayer != null) {
 			player.teleport(chosenPlayer);
 			player.setSpectatorTarget(chosenPlayer);
+			player.sendTitle(ChatColor.DARK_RED + "You are dead", ChatColor.WHITE + "Spectating " + chosenPlayer, 0, 3, 1);
 		}
 			
 	}
