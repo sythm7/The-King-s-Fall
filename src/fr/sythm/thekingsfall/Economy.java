@@ -22,8 +22,6 @@ public class Economy {
 	// Manque paramètres. A foutre après avoir réfléchi à l'économie
 	
 	private HashMapList hashMapList = new HashMapList();
-	private HashMap<Player, TeamColor> playersMap = hashMapList.getPlayersMap();
-	private EnumMap<TeamColor, TreeSet<Player>> listTeamPlayers = hashMapList.getListeJoueursTeam();
 	
 	public Economy() {
 		
