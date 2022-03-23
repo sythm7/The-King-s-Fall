@@ -20,14 +20,14 @@ public class CommandSpectate implements CommandExecutor {
 		
 		String playerName = args[0];
 		
-		player.setGameMode(GameMode.SPECTATOR);
-		
 		Player targetPlayer = sender.getServer().getPlayer(playerName);
 		
 		if(targetPlayer == null) {
 			player.sendMessage(ChatColor.RED + "Target player is null.");
 			return false;
 		}
+		
+		player.setGameMode(GameMode.SPECTATOR);
 		
 		player.teleport(targetPlayer);
 		
