@@ -6,8 +6,8 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -15,15 +15,16 @@ import org.bukkit.entity.Player;
 
 import fr.sythm.thekingsfall.Territory;
 import fr.sythm.utils.Couple;
+import fr.sythm.utils.Location2D;
 import fr.sythm.utils.TerritoryUtils;
 
 public class CommandTerritory implements CommandExecutor {
 	
-	private Map<Player, Couple<Location, Location>> playersPositionsMap = new HashMap<>();
+	private Map<Player, Couple<Location2D, Location2D>> playersPositionsMap = new HashMap<>();
 	
 	private Set<Territory> territoriesList = new LinkedHashSet<>();
 
-	public CommandTerritory(Map<Player, Couple<Location, Location>> playersPositionsMap, Set<Territory> territoriesList) {
+	public CommandTerritory(Map<Player, Couple<Location2D, Location2D>> playersPositionsMap, Set<Territory> territoriesList) {
 		this.playersPositionsMap = playersPositionsMap;
 		this.territoriesList = territoriesList;
 	}
@@ -57,7 +58,7 @@ public class CommandTerritory implements CommandExecutor {
 	
 	public boolean createTerritory(Player player) {
 		
-		Couple<Location, Location> area = null;
+		Couple<Location2D, Location2D> area = null;
 		
 		if(this.playersPositionsMap.get(player) != null)
 			area = new Couple<>(this.playersPositionsMap.get(player).getFirstElement(), this.playersPositionsMap.get(player).getSecondElement());
@@ -74,6 +75,8 @@ public class CommandTerritory implements CommandExecutor {
 			return false;
 		}
 		
+		Bukkit.getServer().broadcastMessage("World : " + territory.getAreaCoordinates().getFirstElement().getWorld());
+		
 		this.territoriesList.add(territory);
 		
 		player.sendMessage(ChatColor.GREEN + "New territory successfully created from " + ChatColor.WHITE + this.formatAreas(area.getFirstElement(), area.getSecondElement()) + ChatColor.GREEN + ".");
@@ -86,7 +89,7 @@ public class CommandTerritory implements CommandExecutor {
 		Territory territory = null;
 		
 		if(args.length == 1)
-			territory = TerritoryUtils.getTerritory(player.getLocation(), this.territoriesList);
+			territory = TerritoryUtils.getTerritory(new Location2D(player.getLocation()), this.territoriesList);
 		else if(args.length == 2) {
 			try {
 				int id = Integer.valueOf(args[1]);
@@ -131,7 +134,7 @@ public class CommandTerritory implements CommandExecutor {
 		
 		for(Territory territory : this.territoriesList) {
 			
-			Location[] corners = territory.getTerritoryCorners();
+			Location2D[] corners = territory.getTerritoryCorners();
 			
 			sb.append(ChatColor.BLUE + "-" + ChatColor.GOLD + " ID : " + id++ + ChatColor.WHITE + "  -  " + ChatColor.AQUA + "Corners coordinates : " + this.formatCorners(corners) + "\n");
 		}
@@ -148,13 +151,13 @@ public class CommandTerritory implements CommandExecutor {
 	
 	public boolean displayTerritory(Player player) {
 		
-		Territory territory = TerritoryUtils.getTerritory(player.getLocation(), this.territoriesList);
+		Territory territory = TerritoryUtils.getTerritory(new Location2D(player.getLocation()), this.territoriesList);
 		if(territory == null) {
 			player.sendMessage(ChatColor.RED + "You are not in a territory !");
 			return false;
 		}
 		
-		Location[] corners = territory.getTerritoryCorners();
+		Location2D[] corners = territory.getTerritoryCorners();
 		
 		player.sendMessage(ChatColor.GREEN + "You are currently in the territory with the " + ChatColor.GOLD + "ID (" + this.getTerritoryId(territory) +
 				")" + ChatColor.GREEN + ", and with corners coordinates : " + ChatColor.AQUA + this.formatCorners(corners));
@@ -189,19 +192,19 @@ public class CommandTerritory implements CommandExecutor {
 		return territory;
 	}
 	
-	public String formatAreas(Location l1, Location l2) {
-		return "(" + l1.getBlockX() + ", ~, " + l1.getBlockZ() + ") to "
-				+ "(" + l2.getBlockX() + ", ~, " + l2.getBlockZ() + ")";
+	public String formatAreas(Location2D l1, Location2D l2) {
+		return "(" + l1.getFirstElement() + ", ~, " + l1.getSecondElement() + ") to "
+				+ "(" + l2.getFirstElement() + ", ~, " + l2.getSecondElement() + ")";
 	}
 	
-	public String formatCorners(Location[] corners) {
+	public String formatCorners(Location2D[] corners) {
 		
 		StringBuilder sb = new StringBuilder();
 		
-		sb.append("(" + corners[0].getBlockX() + ", ~, " + corners[0].getBlockZ() + "); " +
-				"(" + corners[2].getBlockX() + ", ~, " + corners[2].getBlockZ() + "); " +
-				"(" + corners[1].getBlockX() + ", ~, " + corners[1].getBlockZ() + "); " +
-				"(" + corners[3].getBlockX() + ", ~, " + corners[3].getBlockZ() + ")");
+		sb.append("(" + corners[0].getFirstElement() + ", ~, " + corners[0].getSecondElement() + "); " +
+				"(" + corners[2].getFirstElement() + ", ~, " + corners[2].getSecondElement() + "); " +
+				"(" + corners[1].getFirstElement() + ", ~, " + corners[1].getSecondElement() + "); " +
+				"(" + corners[3].getFirstElement() + ", ~, " + corners[3].getSecondElement() + ")");
 		
 		return sb.toString();
 	}

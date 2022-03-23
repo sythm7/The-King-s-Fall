@@ -2,29 +2,29 @@ package fr.sythm.thekingsfall;
 
 import java.util.Set;
 
-import org.bukkit.Location;
 import org.bukkit.World;
 
 import fr.sythm.utils.Couple;
+import fr.sythm.utils.Location2D;
 import fr.sythm.utils.TeamColor;
 import fr.sythm.utils.TerritoryUtils;
 
 public class Territory {
 
-	private Couple<Location, Location> areaCoordinates;
+	private Couple<Location2D, Location2D> areaCoordinates;
 	
 	private TeamColor teamColor = TeamColor.NONE;
 	
-	public Territory(Couple<Location, Location> areaCoordinates) {
+	public Territory(Couple<Location2D, Location2D> areaCoordinates) {
 		this.areaCoordinates = areaCoordinates;
 		
 	}
 
-	public Couple<Location, Location> getAreaCoordinates() {
+	public Couple<Location2D, Location2D> getAreaCoordinates() {
 		return areaCoordinates;
 	}
 
-	public void setAreaCoordinates(Couple<Location, Location> areaCoordinates) {
+	public void setAreaCoordinates(Couple<Location2D, Location2D> areaCoordinates) {
 		this.areaCoordinates = areaCoordinates;
 	}
 
@@ -40,7 +40,7 @@ public class Territory {
 		
 		for(Territory territory : territoriesList) {
 			
-			for(Location location : territory.getTerritoryCorners()) {
+			for(Location2D location : territory.getTerritoryCorners()) {
 				if(TerritoryUtils.getTerritory(location, territoriesList) != null)
 					return true;
 			}
@@ -49,16 +49,16 @@ public class Territory {
 		return false;
 	}
 	
-	public Location[] getTerritoryCorners() {
+	public Location2D[] getTerritoryCorners() {
 		
-		Location[] territoryCorners = new Location[4];
+		Location2D[] territoryCorners = new Location2D[4];
 		
 		World world = this.areaCoordinates.getFirstElement().getWorld();
 		
 		territoryCorners[0] = this.areaCoordinates.getFirstElement();
 		territoryCorners[1] = this.areaCoordinates.getSecondElement();
-		territoryCorners[2] = new Location(world, territoryCorners[0].getBlockX(), 0, territoryCorners[1].getBlockZ());
-		territoryCorners[3] = new Location(world, territoryCorners[1].getBlockX(), 0, territoryCorners[0].getBlockZ());
+		territoryCorners[2] = new Location2D(world, territoryCorners[0].getFirstElement(), territoryCorners[1].getSecondElement());
+		territoryCorners[3] = new Location2D(world, territoryCorners[1].getFirstElement(), territoryCorners[0].getSecondElement());
 		
 		return territoryCorners;
 	}

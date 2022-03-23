@@ -2,9 +2,9 @@ package fr.sythm.utils;
 
 public class Couple<E1, E2> {
 	
-	private E1 firstElement;
+	protected E1 firstElement;
 	
-	private E2 secondElement;
+	protected E2 secondElement;
 	
 	public Couple(E1 firstElement, E2 secondElement) {
 		this.setFirstElement(firstElement);

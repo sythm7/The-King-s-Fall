@@ -6,7 +6,6 @@ import java.util.TreeSet;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -22,12 +21,13 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.sythm.utils.Couple;
 import fr.sythm.utils.HashMapList;
+import fr.sythm.utils.Location2D;
 import fr.sythm.utils.TeamColor;
 import net.md_5.bungee.api.ChatColor;
 
 public class MyPluginListeners implements Listener {
 	
-	private HashMap<Player, Couple<Location, Location>> playersPositionsMap;
+	private HashMap<Player, Couple<Location2D, Location2D>> playersPositionsMap;
 	private HashMap<Player, TeamColor> playersMap;
 	private EnumMap<TeamColor, TreeSet<Player>> listeJoueursTeam;
 
@@ -50,100 +50,39 @@ public class MyPluginListeners implements Listener {
 			return;
 		
 		if(action.equals(Action.LEFT_CLICK_BLOCK)) {
-			Location location = event.getClickedBlock().getLocation();
+			Location2D location2D = new Location2D(event.getClickedBlock().getLocation());
 
-			Couple<Location, Location> locationCouple = this.playersPositionsMap.get(player);
+			Couple<Location2D, Location2D> locationCouple = this.playersPositionsMap.get(player);
 			
 			if(locationCouple == null)
-				this.playersPositionsMap.put(player, new Couple<>(location, null));
+				this.playersPositionsMap.put(player, new Couple<>(location2D, null));
 			else
-				locationCouple.setFirstElement(location);
+				locationCouple.setFirstElement(location2D);
 			
-			player.sendMessage(ChatColor.GOLD + "First position set to : (" + location.getX() + ", " + location.getY() + ", " + location.getZ() + ").");
+			player.sendMessage(ChatColor.GOLD + "First position set to : (" + location2D.getFirstElement() + ", ~," + location2D.getSecondElement() + ").");
 			
 		}
 		else if(action.equals(Action.RIGHT_CLICK_BLOCK)) {
-			Location location = event.getClickedBlock().getLocation();
+			Location2D location2D = new Location2D(event.getClickedBlock().getLocation());
 
-			Couple<Location, Location> locationCouple = this.playersPositionsMap.get(player);
+			Couple<Location2D, Location2D> locationCouple = this.playersPositionsMap.get(player);
 			
 			if(locationCouple == null)
-				this.playersPositionsMap.put(player, new Couple<>(null, location));
+				this.playersPositionsMap.put(player, new Couple<>(null, location2D));
 			else
-				locationCouple.setSecondElement(location);
+				locationCouple.setSecondElement(location2D);
 			
-			player.sendMessage(ChatColor.BLUE + "Second position set to : (" + location.getX() + ", " + location.getY() + ", " + location.getZ() + ").");
+			player.sendMessage(ChatColor.BLUE + "Second position set to : (" + location2D.getFirstElement() + ", ~," + location2D.getSecondElement() + ").");
 
 		}
 
 	}
-	
-	@EventHandler
-	public void onShearsInteract(PlayerInteractEvent event) {
-		ItemStack selectedItem = event.getItem();
-		
-		Player player = event.getPlayer();
-		
-		Action action = event.getAction();
-		
-		World world = player.getWorld();
-		
-		if(selectedItem == null || ! selectedItem.getType().equals(Material.SHEARS))
-			return;
-		
-		if(action.equals(Action.LEFT_CLICK_AIR) || action.equals(Action.LEFT_CLICK_BLOCK)) {
-			player.setGameMode(GameMode.SPECTATOR);
-			Player chosenPlayer = null;
-			for(Player worldPlayer : world.getPlayers()) {
-				chosenPlayer = worldPlayer;
-				if(chosenPlayer.getGameMode().equals(GameMode.SURVIVAL) || !chosenPlayer.equals(player)) {
-					Bukkit.getServer().broadcastMessage("Found player !");
-					break;
-				}
-			}
-			Bukkit.getServer().broadcastMessage(player.getName() + " is tp to " + chosenPlayer.getName());
-			player.setSpectatorTarget(chosenPlayer);
-		}
-	}
-
-//	@EventHandler
-//	public void onPlayerDamageByEntity(EntityDamageByEntityEvent event) {
-//		
-//		String deathMessage = new String();
-//
-//		if (! (event.getEntity() instanceof  Player))
-//			return;
-//		
-//		Player player = (Player) event.getEntity();
-//	
-//		if(player.getHealth() - event.getDamage() <= 0) {
-//			event.setCancelled(true);
-//			if(event.getDamager() instanceof Player) {
-//				Player killerPlayer = (Player) event.getDamager();
-//				deathMessage = player.getName() + " was killed by " + killerPlayer.getName();
-//			}
-//			else if(event.getDamager() instanceof Projectile) {
-//				Projectile projectile = (Projectile) event.getDamager();
-//				if(projectile.getShooter() instanceof Player) {
-//					deathMessage = player.getName() + " was killed by " + ((Player)projectile.getShooter()).getName();
-//				}
-//				else
-//					deathMessage = player.getName() + " was killed by a " + ((Entity)projectile.getShooter()).getName();
-//			}
-//			
-//			else {
-//				deathMessage = player.getName() + " is dead.";
-//			}
-//			
-//			this.makePlayerSpectate(player, deathMessage);
-//		}
-//	}
 	
 	
 	@EventHandler
 	public void onPlayerDamage(EntityDamageEvent event) {
 		
-		String deathMessage = new String();
+		String deathMessage;
 
 		if (! (event.getEntity() instanceof  Player))
 			return;
@@ -175,20 +114,17 @@ public class MyPluginListeners implements Listener {
 			else
 				deathMessage = player.getName() + " is dead.";
 
+			/* EVENTUALLY DON'T DROP THE PLAYER'S ITEMS WHEN HE DIES
+			 * 
 			for(ItemStack itemstack : player.getInventory().getContents()) {
 				if(itemstack != null)
-					player.getWorld().dropItemNaturally(player.getLocation(), itemstack);
+					player.getWorld().dropItemNaturally(player.getLocation(), itemstack); 
 			}
+			*/
 				
 			player.getInventory().clear();
-			
 			player.setHealth(20.0);
 			player.setFoodLevel(20);
-			
-			//player.getWorld().playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
-			//player.getWorld().playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
-			
-			//player.getWorld().strikeLightning(player.getLocation());
 			
 			player.getWorld().strikeLightningEffect(player.getLocation());
 			
@@ -218,97 +154,4 @@ public class MyPluginListeners implements Listener {
 		}
 			
 	}
-	
-	
-//	@EventHandler
-//	public void onPlayerDeath(PlayerDeathEvent event) {
-//		
-//		Player player = event.getEntity();
-//		Bukkit.getServer().broadcastMessage(player.getName() + " is dead");
-//		
-//		World world = player.getWorld();
-//		
-//		RespawnPlayerThread rspPlayerThread = new RespawnPlayerThread(player, world);
-//		rspPlayerThread.start();
-//		
-//	}
-//	
-//	private class RespawnPlayerThread extends Thread {
-//		
-//		private Player player;
-//		private World world;
-//		
-//		public RespawnPlayerThread(Player player, World world) {
-//			this.player = player;
-//			this.world = world;
-//		}
-//		
-//		@Override
-//		public void run() {
-//			RespawnScheduler rspScheduler = new RespawnScheduler(player);
-//			Bukkit.getScheduler().runTask(Main.getInstance(), rspScheduler); 
-//			
-//			Bukkit.getServer().broadcastMessage("J'attends");
-//			synchronized(rspScheduler) {
-//				try {
-//					rspScheduler.wait();
-//				} catch (InterruptedException e) {
-//					e.printStackTrace();
-//				}
-//			}
-//			Bukkit.getServer().broadcastMessage("Je me réveille");
-//			Bukkit.getScheduler().runTask(Main.getInstance(), () -> {
-//				player.setGameMode(GameMode.SPECTATOR);
-//				Player chosenPlayer = null;
-//				for(Player worldPlayer : world.getPlayers()) {
-//					chosenPlayer = worldPlayer;
-//					if(chosenPlayer.getGameMode().equals(GameMode.SURVIVAL) || !chosenPlayer.equals(player)) {
-//						Bukkit.getServer().broadcastMessage("Found player !");
-//						break;
-//					}
-//				}
-//				
-//				Bukkit.getServer().broadcastMessage(player.getName() + " is tp to " + chosenPlayer.getName());
-//				player.setSpectatorTarget(chosenPlayer);
-//			});
-//			
-//			
-//			/*TreeSet<Player> playersList = listeJoueursTeam.get(this.playersMap.get(player));
-//			
-//			Player chosenPlayer = playersList.first();
-//			Iterator<Player> iterator = playersList.iterator();
-//			
-//			while(iterator.hasNext()) {
-//				
-//				if(!chosenPlayer.getGameMode().equals(GameMode.SURVIVAL) || chosenPlayer.equals(player)) {
-//					chosenPlayer = iterator.next();
-//				} else {
-//					break;
-//				}
-//			}*/ //For players in a team
-//			
-//			
-//		}
-//	}
-//	
-//	private class RespawnScheduler implements Runnable{
-//
-//		private Player player;
-//		
-//		public RespawnScheduler(Player player) {
-//			this.player = player;
-//		}
-//		@Override
-//		public void run() {
-//			PacketPlayInClientCommand packet = new PacketPlayInClientCommand(PacketPlayInClientCommand.EnumClientCommand.PERFORM_RESPAWN);
-//			EntityPlayer entityPlayer = ((CraftPlayer) player).getHandle();
-//			entityPlayer.playerConnection.a(packet);
-//			Bukkit.getServer().broadcastMessage("Task done");
-//			synchronized(this) {
-//				notify();
-//			}
-//		} // This whole bullshit allow respawning instantly without clicking
-//		
-//	}
-//	
 }
