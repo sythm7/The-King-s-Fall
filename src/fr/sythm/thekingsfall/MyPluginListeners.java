@@ -28,12 +28,11 @@ import net.md_5.bungee.api.ChatColor;
 public class MyPluginListeners implements Listener {
 	
 	private HashMap<Player, Couple<Location2D, Location2D>> playersPositionsMap;
-	private HashMap<Player, TeamColor> playersMap;
+	private HashMap<Player, Team> playersMap;
 	private EnumMap<TeamColor, TreeSet<Player>> listeJoueursTeam;
 
 	public MyPluginListeners(HashMapList hashMapList) {
 		this.playersPositionsMap = hashMapList.getPlayersPositionsMap();
-		this.listeJoueursTeam = hashMapList.getListeJoueursTeam();
 		this.playersMap = hashMapList.getPlayersMap();
 	}
 

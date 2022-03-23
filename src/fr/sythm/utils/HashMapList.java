@@ -5,20 +5,18 @@ import java.util.HashMap;
 import java.util.TreeSet;
 import org.bukkit.entity.Player;
 
+import fr.sythm.thekingsfall.Team;
+
 public class HashMapList {
 	
-	private HashMap<Player, TeamColor> playersMap = new HashMap<>(); // Pour savoir dans quelle team se trouve le joueur (?)
-	private EnumMap<TeamColor, TreeSet<Player>> listeJoueursTeam = new EnumMap<>(TeamColor.class);
+	private HashMap<Player, Team> playersMap = new HashMap<>(); // Pour savoir dans quelle team se trouve le joueur (?)
 	private HashMap<Player, Couple<Location2D, Location2D>> playersPositionsMap = new HashMap<>();
 	
 	
-	
-	public HashMap<Player, TeamColor> getPlayersMap() {
+	public HashMap<Player, Team> getPlayersMap() {
 		return playersMap;
 	}
-	public EnumMap<TeamColor, TreeSet<Player>> getListeJoueursTeam() {
-		return listeJoueursTeam;
-	}
+
 	public HashMap<Player, Couple<Location2D, Location2D>> getPlayersPositionsMap() {
 		return playersPositionsMap;
 	}

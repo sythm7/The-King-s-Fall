@@ -3,6 +3,10 @@ version: 0.1
 author: SYTHM.
 main: fr.sythm.thekingsfall.Main
 commands:
+  team:
+    description: Add player(s) to the specified team color.
+    permission: team.use
+    aliases: tm
   speed:
     description: Change the player speed
     permission: speed.use
