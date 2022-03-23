@@ -2,6 +2,7 @@ package fr.sythm.thekingsfall;
 
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 
 import fr.sythm.utils.Couple;
@@ -41,8 +42,11 @@ public class Territory {
 		for(Territory territory : territoriesList) {
 			
 			for(Location2D location : territory.getTerritoryCorners()) {
-				if(TerritoryUtils.getTerritory(location, territoriesList) != null)
+				if(TerritoryUtils.getTerritory(location, territoriesList) != null) {
+					Bukkit.getServer().broadcastMessage("isOverlapping : " + true); 
 					return true;
+				}
+					
 			}
 		}
 		

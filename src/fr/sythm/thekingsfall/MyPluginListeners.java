@@ -75,7 +75,6 @@ public class MyPluginListeners implements Listener {
 			player.sendMessage(ChatColor.BLUE + "Second position set to : (" + location2D.getFirstElement() + ", ~," + location2D.getSecondElement() + ").");
 
 		}
-
 	}
 	
 	
@@ -131,7 +130,7 @@ public class MyPluginListeners implements Listener {
 			this.makePlayerSpectate(player, deathMessage);
 		}
 	}
-	
+
 	
 	public void makePlayerSpectate(Player player, String deathMessage) {
 		

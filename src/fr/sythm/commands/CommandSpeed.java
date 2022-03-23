@@ -27,12 +27,12 @@ public class CommandSpeed implements CommandExecutor {
 			speed = Float.valueOf(args[0]);
 		}
 		catch(NumberFormatException exception) {
-			player.sendMessage(ChatColor.RED + "Wrong argument '" + args[0] + "' -> Usage : /speed <number>\nwith number between 1 and 10 included");
+			player.sendMessage(ChatColor.RED + "Wrong argument '" + args[0] + "' -> Usage : /speed <number> with number between 1 and 10 included");
 			return false;
 		}
 		
 		if(speed < 0 || speed > 10) {
-			player.sendMessage(ChatColor.RED + "Wrong speed number '" + speed + "' -> Usage : /speed <number>\nwith number between 0 and 10 included");
+			player.sendMessage(ChatColor.RED + "Wrong speed number '" + speed + "' -> Usage : /speed <number> with number between 0 and 10 included");
 			return false;
 		}
 			
