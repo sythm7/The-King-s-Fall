@@ -33,8 +33,16 @@ public class Team {
 		this.playersInTeam.add(player);
 	}
 	
+	public void removePlayer(Player player) {
+		this.playersInTeam.remove(player);
+	}
+	
 	public HashSet<Player> getPlayersList() {
 		return this.playersInTeam;
+	}
+	
+	public int getSize() {
+		return this.playersInTeam.size();
 	}
 	
 }
