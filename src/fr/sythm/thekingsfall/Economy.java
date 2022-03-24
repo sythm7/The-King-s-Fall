@@ -1,13 +1,7 @@
 package fr.sythm.thekingsfall;
 
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.TreeSet;
-
-import org.bukkit.entity.Player;
 
 import fr.sythm.utils.HashMapList;
-import fr.sythm.utils.TeamColor;
 
 public class Economy {
 
@@ -19,7 +13,7 @@ public class Economy {
 	
 	private final float valuePerKillModifier = 0.9f;
 	
-	// Manque paramètres. A foutre après avoir réfléchi à l'économie
+	// Missing parameters. TODO when economy strategy will be decided.
 	
 	private HashMapList hashMapList = new HashMapList();
 	
