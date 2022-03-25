@@ -16,6 +16,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -76,7 +77,6 @@ public class MyPluginListeners implements Listener {
 		}
 	}
 	
-	
 	@EventHandler
 	public void onPlayerDamage(EntityDamageEvent event) {
 		
@@ -88,29 +88,10 @@ public class MyPluginListeners implements Listener {
 		Player player = (Player) event.getEntity();
 	
 		if(player.getHealth() - event.getDamage() <= 0) {
-			event.setCancelled(true);
 			
-			if(player.getLastDamageCause() instanceof EntityDamageByEntityEvent) {
-				
-				EntityDamageByEntityEvent entityDamageEvent = (EntityDamageByEntityEvent) player.getLastDamageCause();
-				
-				if(entityDamageEvent.getDamager() instanceof Player) {
-					Player killerPlayer = (Player) entityDamageEvent.getDamager();
-					deathMessage = player.getName() + " was killed by " + killerPlayer.getName();
-				}
-				else if(entityDamageEvent.getDamager() instanceof Projectile) {
-					Projectile projectile = (Projectile) entityDamageEvent.getDamager();
-					if(projectile.getShooter() instanceof Player) {
-						deathMessage = player.getName() + " was killed by " + ((Player)projectile.getShooter()).getName();
-					}
-					else
-						deathMessage = player.getName() + " was killed by a " + ((Entity)projectile.getShooter()).getName();
-				}
-				else
-					deathMessage = player.getName() + " is dead.";
+			if(event.getCause() == DamageCause.ENTITY_ATTACK || event.getCause() == DamageCause.PROJECTILE) {
+				return;
 			}
-			else
-				deathMessage = player.getName() + " is dead.";
 
 			/* EVENTUALLY DON'T DROP THE PLAYER'S ITEMS WHEN HE DIES
 			 * 
@@ -119,6 +100,8 @@ public class MyPluginListeners implements Listener {
 					player.getWorld().dropItemNaturally(player.getLocation(), itemstack); 
 			}
 			*/
+			
+			deathMessage = player.getName() + " is dead somehow.";
 				
 			player.getInventory().clear();
 			player.setHealth(20.0);
@@ -126,9 +109,109 @@ public class MyPluginListeners implements Listener {
 			
 			player.getWorld().strikeLightningEffect(player.getLocation());
 			
+			event.setCancelled(true);
+			
 			this.makePlayerSpectate(player, deathMessage);
 		}
 	}
+	
+	@EventHandler
+	public void onPlayerDamageByEntity(EntityDamageByEntityEvent event) {
+		
+		String deathMessage;
+		
+		if (! (event.getEntity() instanceof  Player))
+			return;
+		
+		Player player = (Player) event.getEntity();
+		
+		if(player.getHealth() - event.getDamage() <= 0) {
+			if(event.getDamager() instanceof Player) {
+				Player killerPlayer = (Player) event.getDamager();
+				deathMessage = player.getName() + " was killed by " + killerPlayer.getName();
+			}
+			else if(event.getDamager() instanceof Projectile) {
+				Projectile projectile = (Projectile) event.getDamager();
+				if(projectile.getShooter() instanceof Player) {
+					deathMessage = player.getName() + " was killed by " + ((Player)projectile.getShooter()).getName();
+				}
+				else if(projectile.getShooter() != null)
+					deathMessage = player.getName() + " was killed by a " + ((Entity)projectile.getShooter()).getName();
+				else
+					deathMessage = player.getName() + " is dead somehow by an entity.";
+			}
+			else
+				deathMessage = player.getName() + " is dead somehow by an entity.";
+			
+			player.getInventory().clear();
+			player.setHealth(20.0);
+			player.setFoodLevel(20);
+			
+			player.getWorld().strikeLightningEffect(player.getLocation());
+			
+			event.setCancelled(true);
+			
+			this.makePlayerSpectate(player, deathMessage);
+		}
+		
+	}
+	
+	
+//	@EventHandler
+//	public void onPlayerDamage(EntityDamageEvent event) {
+//		
+//		String deathMessage;
+//
+//		if (! (event.getEntity() instanceof  Player))
+//			return;
+//		
+//		Player player = (Player) event.getEntity();
+//	
+//		if(player.getHealth() - event.getDamage() <= 0) {
+//			
+//			if(player.getLastDamageCause() instanceof EntityDamageByEntityEvent) {
+//				
+//				EntityDamageByEntityEvent entityDamageEvent = (EntityDamageByEntityEvent) player.getLastDamageCause();
+//				
+//				if(entityDamageEvent.getDamager() instanceof Player) {
+//					Player killerPlayer = (Player) entityDamageEvent.getDamager();
+//					deathMessage = player.getName() + " was killed by " + killerPlayer.getName();
+//				}
+//				else if(entityDamageEvent.getDamager() instanceof Projectile) {
+//					Projectile projectile = (Projectile) entityDamageEvent.getDamager();
+//					if(projectile.getShooter() instanceof Player) {
+//						deathMessage = player.getName() + " was killed by " + ((Player)projectile.getShooter()).getName();
+//					}
+//					else if(projectile.getShooter() != null)
+//						deathMessage = player.getName() + " was killed by a " + ((Entity)projectile.getShooter()).getName();
+//					else
+//						deathMessage = player.getName() + " is dead.";
+//				}
+//				else
+//					deathMessage = player.getName() + " is dead.";
+//			}
+//			else
+//				deathMessage = player.getName() + " is dead.";
+//
+//			/* EVENTUALLY DON'T DROP THE PLAYER'S ITEMS WHEN HE DIES
+//			 * 
+//			for(ItemStack itemstack : player.getInventory().getContents()) {
+//				if(itemstack != null)
+//					player.getWorld().dropItemNaturally(player.getLocation(), itemstack); 
+//			}
+//			*/
+//				
+//			player.getInventory().clear();
+//			player.setHealth(20.0);
+//			player.setFoodLevel(20);
+//			
+//			player.getWorld().strikeLightningEffect(player.getLocation());
+//			
+//			event.setCancelled(true);
+//			
+//			this.makePlayerSpectate(player, deathMessage);
+//		}
+//	}
 
 	
 	public void makePlayerSpectate(Player player, String deathMessage) {
@@ -149,7 +232,7 @@ public class MyPluginListeners implements Listener {
 		if(chosenPlayer != null) {
 			player.teleport(chosenPlayer);
 			player.setSpectatorTarget(chosenPlayer);
-			player.sendTitle(ChatColor.DARK_RED + "You are dead", ChatColor.WHITE + "Spectating " + chosenPlayer, 0, 3, 1);
+			player.sendTitle(ChatColor.DARK_RED + "You are dead", ChatColor.WHITE + "Spectating " + chosenPlayer.getName(), 20, 60, 20);
 		}
 			
 	}
