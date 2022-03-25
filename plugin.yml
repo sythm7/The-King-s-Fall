@@ -3,6 +3,9 @@ version: 0.1
 author: SYTHM.
 main: fr.sythm.thekingsfall.Main
 commands:
+  heal:
+    description: Heal the player.
+    permission: heal.use
   team:
     description: Add player(s) to the specified team color.
     permission: team.use
