@@ -17,16 +17,39 @@ public class CommandHeal implements CommandExecutor {
 		
 		Player player = (Player) sender;
 		
-		if(! player.isOp()) {
-			player.sendMessage(ChatColor.RED + "Sorry, only op players can execute this command.");
+//		if(! player.isOp()) {
+//			player.sendMessage(ChatColor.RED + "Sorry, only op players can execute this command.");
+//			return false;
+//		}
+		
+		if(args.length > 1) {
+			player.sendMessage(ChatColor.RED + "Wrong number of arguments. Usage -> \"/heal [player]\" to heal a player.");
 			return false;
 		}
+		
+		if(args.length == 0) 
+			healPlayer(player);
+		else {
+			Player target = sender.getServer().getPlayer(args[0]);
+			healPlayer(player, target);
+		}
+		return true;
+	}
+	
+	public void healPlayer(Player player) {
 		player.setHealth(20);
 		player.setFoodLevel(20);
 		player.setSaturation(20);
 		player.sendMessage(ChatColor.GREEN + "You just got healed !");
-		
-		return true;
+	}
+	
+	public void healPlayer(Player player, Player target) {
+		target.setHealth(20);
+		target.setFoodLevel(20);
+		target.setSaturation(20);
+		player.sendMessage(ChatColor.GREEN + "Successfully healed " + target.getName());
+		if(! (player.equals(target)))
+			target.sendMessage(ChatColor.GREEN + "You just got healed by " + player.getName() + " !");
 	}
 
 	
