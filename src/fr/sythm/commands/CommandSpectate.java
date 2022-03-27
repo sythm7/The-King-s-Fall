@@ -1,11 +1,15 @@
 package fr.sythm.commands;
 
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import fr.sythm.thekingsfall.Main;
 
 
 public class CommandSpectate implements CommandExecutor {
@@ -20,7 +24,8 @@ public class CommandSpectate implements CommandExecutor {
 		
 		String playerName = args[0];
 		
-		Player targetPlayer = sender.getServer().getPlayer(playerName);
+		Player targetPlayer = Bukkit.getServer().getPlayer(playerName);
+		
 		
 		if(targetPlayer == null) {
 			player.sendMessage(ChatColor.RED + "Target player is null.");
@@ -29,9 +34,9 @@ public class CommandSpectate implements CommandExecutor {
 		
 		player.setGameMode(GameMode.SPECTATOR);
 		
-		player.teleport(targetPlayer);
+		player.teleport(targetPlayer.getLocation());
 		
-		player.setSpectatorTarget(targetPlayer);
+		Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> player.setSpectatorTarget(targetPlayer), 5);
 		
 		return true;
 	}

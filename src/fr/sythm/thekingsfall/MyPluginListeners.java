@@ -98,14 +98,6 @@ public class MyPluginListeners implements Listener {
 			if(event.getCause() == DamageCause.ENTITY_ATTACK || event.getCause() == DamageCause.PROJECTILE) {
 				return;
 			}
-
-			/* EVENTUALLY DON'T DROP THE PLAYER'S ITEMS WHEN HE DIES
-			 * 
-			for(ItemStack itemstack : player.getInventory().getContents()) {
-				if(itemstack != null)
-					player.getWorld().dropItemNaturally(player.getLocation(), itemstack); 
-			}
-			*/
 			
 			deathMessage = player.getName() + " is dead somehow.";
 				
@@ -159,9 +151,8 @@ public class MyPluginListeners implements Listener {
 			
 			this.makePlayerSpectate(player, deathMessage);
 		}
-		
 	}
-	
+
 	@EventHandler
 	public void onPlayerJoinTeam(PlayerJoinTeamEvent event) {
 		Player player = event.getPlayer();
@@ -195,65 +186,7 @@ public class MyPluginListeners implements Listener {
 		
 		player.setScoreboard(teamScoreboard);
 	}
-	
-	
-//	@EventHandler
-//	public void onPlayerDamage(EntityDamageEvent event) {
-//		
-//		String deathMessage;
-//
-//		if (! (event.getEntity() instanceof  Player))
-//			return;
-//		
-//		Player player = (Player) event.getEntity();
-//	
-//		if(player.getHealth() - event.getDamage() <= 0) {
-//			
-//			if(player.getLastDamageCause() instanceof EntityDamageByEntityEvent) {
-//				
-//				EntityDamageByEntityEvent entityDamageEvent = (EntityDamageByEntityEvent) player.getLastDamageCause();
-//				
-//				if(entityDamageEvent.getDamager() instanceof Player) {
-//					Player killerPlayer = (Player) entityDamageEvent.getDamager();
-//					deathMessage = player.getName() + " was killed by " + killerPlayer.getName();
-//				}
-//				else if(entityDamageEvent.getDamager() instanceof Projectile) {
-//					Projectile projectile = (Projectile) entityDamageEvent.getDamager();
-//					if(projectile.getShooter() instanceof Player) {
-//						deathMessage = player.getName() + " was killed by " + ((Player)projectile.getShooter()).getName();
-//					}
-//					else if(projectile.getShooter() != null)
-//						deathMessage = player.getName() + " was killed by a " + ((Entity)projectile.getShooter()).getName();
-//					else
-//						deathMessage = player.getName() + " is dead.";
-//				}
-//				else
-//					deathMessage = player.getName() + " is dead.";
-//			}
-//			else
-//				deathMessage = player.getName() + " is dead.";
-//
-//			/* EVENTUALLY DON'T DROP THE PLAYER'S ITEMS WHEN HE DIES
-//			 * 
-//			for(ItemStack itemstack : player.getInventory().getContents()) {
-//				if(itemstack != null)
-//					player.getWorld().dropItemNaturally(player.getLocation(), itemstack); 
-//			}
-//			*/
-//				
-//			player.getInventory().clear();
-//			player.setHealth(20.0);
-//			player.setFoodLevel(20);
-//			
-//			player.getWorld().strikeLightningEffect(player.getLocation());
-//			
-//			event.setCancelled(true);
-//			
-//			this.makePlayerSpectate(player, deathMessage);
-//		}
-//	}
 
-	
 	public void makePlayerSpectate(Player player, String deathMessage) {
 		
 		World world = player.getWorld();
@@ -267,11 +200,13 @@ public class MyPluginListeners implements Listener {
 			}
 		}
 		
+		final Player finalPlayer = chosenPlayer;
+		
 		Bukkit.getServer().broadcastMessage(ChatColor.DARK_PURPLE + deathMessage);
 		
 		if(chosenPlayer != null) {
 			player.teleport(chosenPlayer);
-			player.setSpectatorTarget(chosenPlayer);
+			Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> player.setSpectatorTarget(finalPlayer), 5);
 			player.sendTitle(ChatColor.DARK_RED + "You are dead", ChatColor.WHITE + "Spectating " + chosenPlayer.getName(), 20, 60, 20);
 		}
 			

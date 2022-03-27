@@ -1,5 +1,6 @@
 package fr.sythm.commands;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -71,12 +72,17 @@ public class CommandTerritory implements CommandExecutor {
 		
 		Territory territory = new Territory(area);
 		
+		StringBuilder coins = new StringBuilder();
+		coins.append("Corners du nouveau ter : ");
+		
+		Arrays.asList(territory.getTerritoryCorners()).forEach(corner -> coins.append(corner.toString() + "; "));
+		
+		Bukkit.getServer().broadcastMessage(coins.toString());
+		
 		if(territory.isOverlapping(territoriesList)) {
 			player.sendMessage(ChatColor.RED + "This area is overlapping another territory : territory not created.\nType '/territory list' to show a list of all created territories.");
 			return false;
 		}
-		
-		Bukkit.getServer().broadcastMessage("World : " + territory.getAreaCoordinates().getFirstElement().getWorld());
 		
 		this.territoriesList.add(territory);
 		

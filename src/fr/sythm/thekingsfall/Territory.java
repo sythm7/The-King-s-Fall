@@ -39,15 +39,9 @@ public class Territory {
 	
 	public boolean isOverlapping(Set<Territory> territoriesList) {
 		
-		for(Territory territory : territoriesList) {
-			
-			for(Location2D location : territory.getTerritoryCorners()) {
-				if(TerritoryUtils.getTerritory(location, territoriesList) != null) {
-					Bukkit.getServer().broadcastMessage("isOverlapping : " + true); 
-					return true;
-				}
-					
-			}
+		for(Location2D location : this.getTerritoryCorners()) {
+			if(TerritoryUtils.getTerritory(location, territoriesList) != null)
+				return true;
 		}
 		
 		return false;

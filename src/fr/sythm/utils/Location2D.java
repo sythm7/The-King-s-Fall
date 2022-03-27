@@ -36,4 +36,8 @@ public class Location2D extends Couple<Integer, Integer> {
 	public int hashCode() {
 		return (this.firstElement.hashCode() + this.secondElement.hashCode() + this.world.hashCode()) * 31;
 	}
+	
+	public String toString() {
+		return "(" + this.firstElement + ", " + this.secondElement + ")";
+	}
 }
