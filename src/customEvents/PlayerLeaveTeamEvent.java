@@ -7,7 +7,7 @@ import org.bukkit.event.HandlerList;
 
 import fr.sythm.thekingsfall.Team;
 
-public class PlayerJoinTeamEvent extends Event implements Cancellable {
+public class PlayerLeaveTeamEvent extends Event implements Cancellable {
 
 	private static final HandlerList HANDLERS = new HandlerList();
 	private Player player;
@@ -23,7 +23,7 @@ public class PlayerJoinTeamEvent extends Event implements Cancellable {
 		return HANDLERS;
 	}
 
-	public PlayerJoinTeamEvent(Player player) {
+	public PlayerLeaveTeamEvent(Player player) {
 		this.player = player;
 		this.isCancelled = false;
 	}

@@ -1,19 +1,24 @@
 package fr.sythm.commands;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import customEvents.*;
 import fr.sythm.thekingsfall.Team;
 import fr.sythm.utils.TeamColor;
 
 public class CommandTeam implements CommandExecutor {
 	
 	private ArrayList<Team> teamsList;
+	private PlayerJoinTeamEvent playerJoinTeamEvent;
+	private PlayerLeaveTeamEvent playerLeaveTeamEvent;
 
 	public CommandTeam(ArrayList<Team> teamsList) {
 		this.teamsList = teamsList;
@@ -28,18 +33,25 @@ public class CommandTeam implements CommandExecutor {
 		
 		Player player = (Player) sender;
 		
+		this.playerJoinTeamEvent = new PlayerJoinTeamEvent(player);
+		this.playerLeaveTeamEvent = new PlayerLeaveTeamEvent(player);
 		
 		if(args.length < 1) {
-			player.sendMessage(ChatColor.RED + "Invalid number of arguments -> Usage : '/team <help | create <color> | remove <color> | <color> addPlayer | <color> removePlayer | <color> list>'");
+			player.sendMessage(ChatColor.RED + "Invalid number of arguments -> Usage : /team <help | create <color> | remove <color> | <color> addPlayer | <color> removePlayer | <color> list>");
 			return false;
 		}	
+		
+		if(args[0].equals("help")) {
+			player.sendMessage(ChatColor.GOLD + "Usage : /team <help | create <color> | remove <color> | <color> addPlayer | <color> removePlayer | <color> list>");
+			return true;
+		}
 		
 		if(args[0].equals("create")) {
 			
 			if(args.length == 2)
 				return this.createTeam(player, args[1]);
 			else {
-				player.sendMessage(ChatColor.RED + "Invalid number of arguments -> Usage : '/team <help | create <color> | remove <color> | <color> addPlayer | <color> removePlayer | <color> list>'");
+				player.sendMessage(ChatColor.RED + "Invalid number of arguments -> Usage : /team <help | create <color> | remove <color> | <color> addPlayer | <color> removePlayer | <color> list>");
 				return false;
 			}
 			
@@ -47,20 +59,20 @@ public class CommandTeam implements CommandExecutor {
 			if(args.length == 2)
 				return this.removeTeam(player, args[1]);
 			else {
-				player.sendMessage(ChatColor.RED + "Invalid number of arguments -> Usage : '/team <help | create <color> | remove <color> | <color> addPlayer | <color> removePlayer | <color> list>'");
+				player.sendMessage(ChatColor.RED + "Invalid number of arguments -> Usage : /team <help | create <color> | remove <color> | <color> addPlayer | <color> removePlayer | <color> list>");
 				return false;
 			}
 		} else if (args[0].equalsIgnoreCase(TeamColor.BLUE.toString()) || args[0].equalsIgnoreCase(TeamColor.RED.toString()) || args[0].equalsIgnoreCase(TeamColor.GREEN.toString()) || args[0].equalsIgnoreCase(TeamColor.YELLOW.toString())) {
 			if(args.length == 2) {
-				if(args[1].equalsIgnoreCase("removePlayer"))
-					return this.removePlayer(player, args);
-				else if(args[1].equals("list"))
+				if(args[1].equals("list"))
 					return this.getPlayersList(player, args[0]);
 			} 
+			else if(args[1].equalsIgnoreCase("removePlayer"))
+					return this.removePlayer(player, args);
 			else if(args[1].equalsIgnoreCase("addPlayer"))
 				return this.addPlayer(player, args);
 			else {
-				player.sendMessage(ChatColor.RED + "Invalid number of arguments -> Usage : '/team <help | create <color> | remove <color> | <color> addPlayer | <color> removePlayer | <color> list>'");
+				player.sendMessage(ChatColor.RED + "Invalid number of arguments -> Usage : /team <help | create <color> | remove <color> | <color> addPlayer | <color> removePlayer | <color> list>");
 				return false;
 			}
 			
@@ -79,7 +91,7 @@ public class CommandTeam implements CommandExecutor {
 			teamsList.add(new Team(Enum.valueOf(TeamColor.class, teamColor)));
 			player.sendMessage(ChatColor.GREEN + "Successfully added " + Enum.valueOf(ChatColor.class, teamColor) + teamColor + ChatColor.GREEN + " team.");
 		} else {
-			player.sendMessage(ChatColor.RED + "Cannot create team. Wrong argument given : " + ChatColor.BLUE + teamColor + ChatColor.RED + ". Usage : '/team create <color>' with <color> = RED or BLUE or GREEN or YELLOW");
+			player.sendMessage(ChatColor.RED + "Cannot create team. Wrong argument given : " + ChatColor.BLUE + teamColor + ChatColor.RED + ". Usage : \"/team create <color>\" with <color> = RED or BLUE or GREEN or YELLOW");
 			return false;
 		}
 		return true;
@@ -98,11 +110,11 @@ public class CommandTeam implements CommandExecutor {
 				teamsList.remove(teamToRemove);
 				player.sendMessage(ChatColor.GREEN + "Successfully removed " + Enum.valueOf(ChatColor.class, teamColor) + teamColor + ChatColor.GREEN + " team.");
 			} else {
-				player.sendMessage(ChatColor.RED + "No team named + " + ChatColor.BLUE + teamColor + ChatColor.RED + " were found. Type '/team list' to see a list of all created teams.");
+				player.sendMessage(ChatColor.RED + "No team named + " + ChatColor.BLUE + teamColor + ChatColor.RED + " were found. Type \"/team list\" to see a list of all created teams.");
 				return false;
 			}
 		}
-		
+		Bukkit.getPluginManager().callEvent(playerLeaveTeamEvent); //TODO Move into a loop to remove ALL players from team
 		return true;
 	}
 
@@ -136,12 +148,19 @@ public class CommandTeam implements CommandExecutor {
 			Player searchedPlayer = player.getServer().getPlayer(args[i]);
 			if(searchedPlayer == null) {
 				player.sendMessage(ChatColor.RED + "Player " + args[i] + " not found.");
-			} else {
+			}
+			else if(isPlayerInTeam(searchedPlayer)) { 
+				player.sendMessage(ChatColor.RED + "Cannot add player " + ChatColor.YELLOW + searchedPlayer.getName() + ChatColor.RED + " to this team. Reason : Player is already in a team");
+			} 
+			else {
 				count ++;
 				team.addPlayer(searchedPlayer);
+				playerJoinTeamEvent.setTeam(team);
+				Bukkit.getPluginManager().callEvent(playerJoinTeamEvent); //Check package customEvents for more infos
 			}
 		}
 		player.sendMessage(ChatColor.GREEN + "Successfully added " + ChatColor.YELLOW + count + ChatColor.GREEN + " players in " + Enum.valueOf(ChatColor.class, args[0]) + args[0] + ChatColor.GREEN + " team.");
+		
 		return true;
 	}
 
@@ -179,6 +198,8 @@ public class CommandTeam implements CommandExecutor {
 			} else {
 				count ++;
 				team.removePlayer(searchedPlayer);
+				playerLeaveTeamEvent.setTeam(team);
+				Bukkit.getPluginManager().callEvent(playerLeaveTeamEvent); //Check package customEvents for more infos
 			}
 		}
 		player.sendMessage(ChatColor.GREEN + "Successfully removed " + ChatColor.YELLOW + count + ChatColor.GREEN + " players in " 
@@ -244,6 +265,16 @@ public class CommandTeam implements CommandExecutor {
 		
 		return true;
 	}
-
+	
+	public boolean isPlayerInTeam(Player player) {
+		AtomicBoolean isInTeam = new AtomicBoolean(false);
+		teamsList.forEach(team -> {
+			if(team.getPlayersList().contains(player)) {
+				isInTeam.set(true);
+				return;
+			}
+		});
+		return isInTeam.get(); //Wtf
+	}
 	
 }

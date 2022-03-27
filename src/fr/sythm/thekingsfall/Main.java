@@ -3,6 +3,7 @@ package fr.sythm.thekingsfall;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -28,9 +29,7 @@ public class Main extends JavaPlugin {
 	public void onEnable() {
 		System.out.println(ChatColor.GREEN + "TheKingsFall is now enabled.");
 		instance = this;
-		/* Check comment faire pour l'instancier voire meme si on est contraint de mettre qqchose en parametre
-		 * PlayerJoinTeamEvent playerJoinTeamEvent = new PlayerJoinTeamEvent(new Player());
-		 */
+		
 		this.getCommand("heal").setExecutor(new CommandHeal());
 		this.getCommand("team").setExecutor(new CommandTeam(teamsList));
 		this.getCommand("speed").setExecutor(new CommandSpeed());

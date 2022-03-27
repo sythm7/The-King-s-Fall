@@ -45,4 +45,9 @@ public class Team {
 		return this.playersInTeam.size();
 	}
 	
+	@Override
+	public String toString() {
+		return this.teamColor.toString();
+	}
+	
 }
