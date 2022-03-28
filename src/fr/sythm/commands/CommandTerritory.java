@@ -65,21 +65,21 @@ public class CommandTerritory implements CommandExecutor {
 		StringBuilder sb = new StringBuilder();
 		
 		sb.append("--------------------------------\n" 
-		+ ChatColor.BLUE + "Help for /territory (aka /ter) :\n");
+		+ ChatColor.BLUE + "Help for /territory (aka /ter) :\n\n");
 		
 		sb.append(ChatColor.AQUA + "- \"/territory create\" : Creates a territory into the selected area. "
 				+ "To select an area you need to pick a wooden_sword, then left click to choose the first position of the area, "
-				+ "and right click to choose the second position of the area.\n");
+				+ "and right click to choose the second position of the area.\n\n");
 		
-		sb.append("- \"/territory remove <ID>\" : <ID> is optional. If <ID> is not declared, removes the territory situated at your location. "
-				+ "Else, removes the territory determined by <ID>\n");
+		sb.append("- \"/territory remove [ID]\" : [ID] is optional. If [ID] is not declared, removes the territory situated at your location. "
+				+ "Else, removes the territory determined by [ID]\n\n");
 		
-		sb.append("- \"/territory get <ID>\" : <ID> is optional. If <ID> is not declared, displays the territory situated at your location. \"\n"
-				+ "				+ \"Else, displays the territory determined by <ID>\n");
+		sb.append("- \"/territory get [ID]\" : [ID] is optional. If [ID] is not declared, displays the territory situated at your location. \"\n"
+				+ "Else, displays the territory determined by [ID]\n\n");
 		
 		sb.append("- \"/territory list\" : Displays the list of all created territories. "
 				+ "Also useful to see the corresponding IDs for each territory.\n"
-				+ "--------------------------------");
+				+ ChatColor.WHITE + "--------------------------------");
 		
 		player.sendMessage(sb.toString());
 		
