@@ -1,4 +1,4 @@
-package teamutils;
+package fr.sythm.teamutils;
 
 public enum TeamColor {
 

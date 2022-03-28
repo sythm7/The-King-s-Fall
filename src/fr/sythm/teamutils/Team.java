@@ -1,4 +1,4 @@
-package teamutils;
+package fr.sythm.teamutils;
 
 import java.util.HashSet;
 import org.bukkit.entity.Player;

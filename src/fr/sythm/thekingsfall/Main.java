@@ -12,8 +12,8 @@ import fr.sythm.commands.CommandSpectate;
 import fr.sythm.commands.CommandSpeed;
 import fr.sythm.commands.CommandTeam;
 import fr.sythm.commands.CommandTerritory;
+import fr.sythm.teamutils.Team;
 import fr.sythm.utils.HashMapList;
-import teamutils.Team;
 
 public class Main extends JavaPlugin {
 

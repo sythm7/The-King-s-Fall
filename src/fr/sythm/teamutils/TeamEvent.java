@@ -1,4 +1,4 @@
-package teamutils;
+package fr.sythm.teamutils;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;

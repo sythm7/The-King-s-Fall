@@ -26,14 +26,14 @@ import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 
+import fr.sythm.teamutils.Team;
+import fr.sythm.teamutils.TeamColor;
+import fr.sythm.teamutils.TeamEvent;
+import fr.sythm.teamutils.TeamEventType;
 import fr.sythm.utils.Couple;
 import fr.sythm.utils.HashMapList;
 import fr.sythm.utils.Location2D;
 import net.md_5.bungee.api.ChatColor;
-import teamutils.Team;
-import teamutils.TeamColor;
-import teamutils.TeamEvent;
-import teamutils.TeamEventType;
 
 public class MyPluginListeners implements Listener {
 	

@@ -10,16 +10,16 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import fr.sythm.thekingsfall.Territory;
-import fr.sythm.utils.Location2D;
-import teamutils.Team;
-import teamutils.TeamColor;
-import teamutils.TeamEvent;
-import teamutils.TeamEventType;
+import fr.sythm.teamutils.Team;
+import fr.sythm.teamutils.TeamColor;
+import fr.sythm.teamutils.TeamEvent;
+import fr.sythm.teamutils.TeamEventType;
 
 public class CommandTeam implements CommandExecutor {
 	
 	private ArrayList<Team> teamsList;
+	
+	private String usageMessage = "Invalid number of arguments -> Usage : /team <help | list | create <color> | remove <color> | <color> addPlayers | <color> removePlayers | <color> list>";
 
 	public CommandTeam(ArrayList<Team> teamsList) {
 		this.teamsList = teamsList;
@@ -34,7 +34,7 @@ public class CommandTeam implements CommandExecutor {
 		Player player = (Player) sender;
 		
 		if(args.length < 1) {
-			player.sendMessage(ChatColor.RED + "Invalid number of arguments -> Usage : /team <help | create <color> | remove <color> | <color> addPlayers | <color> removePlayers | <color> list>");
+			player.sendMessage(ChatColor.RED + this.usageMessage);
 			return false;
 		}
 		
@@ -49,7 +49,7 @@ public class CommandTeam implements CommandExecutor {
 			if(args.length == 2)
 				return this.createTeam(player, args[1]);
 			else {
-				player.sendMessage(ChatColor.RED + "Invalid number of arguments -> Usage : /team <help | create <color> | remove <color> | <color> addPlayers | <color> removePlayers | <color> list>");
+				player.sendMessage(ChatColor.RED + this.usageMessage);
 				return false;
 			}
 			
@@ -57,7 +57,7 @@ public class CommandTeam implements CommandExecutor {
 			if(args.length == 2)
 				return this.removeTeam(player, args[1]);
 			else {
-				player.sendMessage(ChatColor.RED + "Invalid number of arguments -> Usage : /team <help | create <color> | remove <color> | <color> addPlayers | <color> removePlayers | <color> list>");
+				player.sendMessage(ChatColor.RED + this.usageMessage);
 				return false;
 			}
 		} else if (args[0].equalsIgnoreCase(TeamColor.BLUE.toString()) || args[0].equalsIgnoreCase(TeamColor.RED.toString()) || args[0].equalsIgnoreCase(TeamColor.GREEN.toString()) || args[0].equalsIgnoreCase(TeamColor.YELLOW.toString())) {
@@ -70,7 +70,7 @@ public class CommandTeam implements CommandExecutor {
 			else if(args[1].equalsIgnoreCase("addPlayers"))
 				return this.addPlayers(player, args);
 			else {
-				player.sendMessage(ChatColor.RED + "Invalid number of arguments -> Usage : /team <help | create <color> | remove <color> | <color> addPlayers | <color> removePlayers | <color> list>");
+				player.sendMessage(ChatColor.RED + this.usageMessage);
 				return false;
 			}
 			
@@ -82,19 +82,18 @@ public class CommandTeam implements CommandExecutor {
 	private boolean displayTeamList(Player player) {
 		
 		final StringBuilder sb = new StringBuilder();
+
 		
-		sb.append(ChatColor.BLUE + "List of all created teams :\n" + ChatColor.AQUA);
-		
-		this.teamsList.forEach(team -> {
-			sb.append(team.toString() + ", ");
-		});
+		this.teamsList.forEach(team -> sb.append(Enum.valueOf(ChatColor.class, team.toString()) + team.toString() + ChatColor.AQUA + ", "));
 		
 		if(sb.toString().isEmpty()) {
 			player.sendMessage(ChatColor.BLUE + "There is no team to display.");
 			return false;
 		}
 		
-		player.sendMessage(sb.toString());
+		String message = sb.substring(0, sb.length() - 2);
+		
+		player.sendMessage(ChatColor.AQUA + "List of all created teams :\n" + ChatColor.AQUA + message);
 		
 		return true;
 	}
@@ -130,10 +129,17 @@ public class CommandTeam implements CommandExecutor {
 		
 		teamColor = teamColor.toUpperCase();
 		
-		if(teamColor.equals(TeamColor.BLUE.toString()) || teamColor.equals(TeamColor.RED.toString()) 
-				|| teamColor.equals(TeamColor.GREEN.toString()) || teamColor.equals(TeamColor.YELLOW.toString())) {
-			teamsList.add(new Team(Enum.valueOf(TeamColor.class, teamColor)));
-			player.sendMessage(ChatColor.GREEN + "Successfully added " + Enum.valueOf(ChatColor.class, teamColor) + teamColor + ChatColor.GREEN + " team.");
+		if(teamColor.equals(TeamColor.BLUE.toString()) || teamColor.equals(TeamColor.RED.toString()) || teamColor.equals(TeamColor.GREEN.toString()) || teamColor.equals(TeamColor.YELLOW.toString())) {
+			Team newTeam = new Team(Enum.valueOf(TeamColor.class, teamColor));
+			if(! teamsList.contains(newTeam)) {
+				teamsList.add(newTeam);
+				player.sendMessage(ChatColor.GREEN + "Successfully added " + Enum.valueOf(ChatColor.class, teamColor) + teamColor + ChatColor.GREEN + " team.");
+			}
+			else {
+				player.sendMessage(ChatColor.RED + "Team " + Enum.valueOf(ChatColor.class, teamColor) + teamColor + ChatColor.RED + " already exists !");
+				return false;
+			}
+					
 		} else {
 			player.sendMessage(ChatColor.RED + "Cannot create team. Wrong argument given : " + ChatColor.BLUE + teamColor + ChatColor.RED + ". Usage : \"/team create <color>\" with <color> = RED or BLUE or GREEN or YELLOW");
 			return false;
@@ -323,6 +329,7 @@ public class CommandTeam implements CommandExecutor {
 	}
 	
 	private boolean isPlayerInTeam(Player player) {
+		
 		AtomicBoolean isInTeam = new AtomicBoolean(false);
 		teamsList.forEach(team -> {
 			if(team.getPlayersList().contains(player)) {
@@ -330,7 +337,7 @@ public class CommandTeam implements CommandExecutor {
 				return;
 			}
 		});
-		return isInTeam.get(); //Wtf
+		return isInTeam.get();
 	}
 	
 }

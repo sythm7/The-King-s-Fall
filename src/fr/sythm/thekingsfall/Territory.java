@@ -2,10 +2,11 @@ package fr.sythm.thekingsfall;
 
 import java.util.Set;
 import org.bukkit.World;
+
+import fr.sythm.teamutils.TeamColor;
 import fr.sythm.utils.Couple;
 import fr.sythm.utils.Location2D;
 import fr.sythm.utils.TerritoryUtils;
-import teamutils.TeamColor;
 
 public class Territory {
 
