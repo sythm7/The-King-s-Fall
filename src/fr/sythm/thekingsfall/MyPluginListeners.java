@@ -26,12 +26,14 @@ import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 
-import customEvents.PlayerJoinTeamEvent;
 import fr.sythm.utils.Couple;
 import fr.sythm.utils.HashMapList;
 import fr.sythm.utils.Location2D;
-import fr.sythm.utils.TeamColor;
 import net.md_5.bungee.api.ChatColor;
+import teamutils.Team;
+import teamutils.TeamColor;
+import teamutils.TeamEvent;
+import teamutils.TeamEventType;
 
 public class MyPluginListeners implements Listener {
 	
@@ -153,37 +155,48 @@ public class MyPluginListeners implements Listener {
 	}
 
 	@EventHandler
-	public void onPlayerJoinTeam(PlayerJoinTeamEvent event) {
+	public void onTeamPlayersChange(TeamEvent event) {
 		Player player = event.getPlayer();
 		
-		Bukkit.getServer().broadcastMessage(ChatColor.GREEN + "Event catched ! " + ChatColor.DARK_PURPLE + player.getName() + ChatColor.GREEN + " data sent to PlayerJoinTeamEvent.");
-	
-		ScoreboardManager scoreboardManager = Bukkit.getScoreboardManager();
-		Scoreboard teamScoreboard = scoreboardManager.getNewScoreboard();
+		Bukkit.getServer().broadcastMessage(ChatColor.GREEN + "Event catched ! " + ChatColor.DARK_PURPLE + player.getName() + ChatColor.GREEN + " data sent to TeamEvent.");
+		
+		if(event.getEventType().equals(TeamEventType.ADD)) {
+			
+			ScoreboardManager scoreboardManager = Bukkit.getScoreboardManager();
+			Scoreboard teamScoreboard = scoreboardManager.getNewScoreboard();
+			
+			String teamName;
+			if(event.getTeam().toString().equalsIgnoreCase("red"))
+				teamName = ChatColor.RED + "Red Team";
+			else if(event.getTeam().toString().equalsIgnoreCase("blue"))
+				teamName = ChatColor.BLUE + "Blue Team";
+			else if(event.getTeam().toString().equalsIgnoreCase("green"))
+				teamName = ChatColor.GREEN + "Green Team";
+			else
+				teamName = ChatColor.YELLOW + "Yellow Team";
+			
+			Objective objectiveTeamMoney = teamScoreboard.registerNewObjective(event.getTeam().toString(), "dummy", teamName);
+			Objective objectiveTeamPlayers = teamScoreboard.registerNewObjective(player.getName(), "dummy", player.getName());
+			
+			Score money = objectiveTeamMoney.getScore(ChatColor.GOLD + "Monnaie");
+			Score playersInTeam = objectiveTeamPlayers.getScore(player.getName());
+			
+			money.setScore(10);
+			//playersInTeam.setScore(1);
+			
+			objectiveTeamMoney.setDisplaySlot(DisplaySlot.SIDEBAR);
+			player.setScoreboard(teamScoreboard);
+		
+
+		} else if(event.getEventType().equals(TeamEventType.REMOVE)) {
+			//Idk yet
+		} else if(event.getEventType().equals(TeamEventType.ELIMINATED)){
+			//Idk yet
+		} else {
+			//Idk yet
+		}
 		
 		
-		String teamName;
-		if(event.getTeam().toString().equalsIgnoreCase("red"))
-			teamName = ChatColor.RED + "Red Team";
-		else if(event.getTeam().toString().equalsIgnoreCase("blue"))
-			teamName = ChatColor.BLUE + "Blue Team";
-		else if(event.getTeam().toString().equalsIgnoreCase("green"))
-			teamName = ChatColor.GREEN + "Green Team";
-		else
-			teamName = ChatColor.YELLOW + "Yellow Team";
-		
-		Objective objectiveTeamMoney = teamScoreboard.registerNewObjective(event.getTeam().toString(), "dummy", teamName);
-		Objective objectiveTeamPlayers = teamScoreboard.registerNewObjective(player.getName(), "dummy", player.getName());
-		
-		Score money = objectiveTeamMoney.getScore(ChatColor.GOLD + "Monnaie");
-		Score playersInTeam = objectiveTeamPlayers.getScore(player.getName());
-		
-		money.setScore(10);
-		//playersInTeam.setScore(1);
-		
-		objectiveTeamMoney.setDisplaySlot(DisplaySlot.SIDEBAR);
-		
-		player.setScoreboard(teamScoreboard);
 	}
 
 	public void makePlayerSpectate(Player player, String deathMessage) {

@@ -10,17 +10,16 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import customEvents.*;
-import fr.sythm.thekingsfall.Team;
 import fr.sythm.thekingsfall.Territory;
 import fr.sythm.utils.Location2D;
-import fr.sythm.utils.TeamColor;
+import teamutils.Team;
+import teamutils.TeamColor;
+import teamutils.TeamEvent;
+import teamutils.TeamEventType;
 
 public class CommandTeam implements CommandExecutor {
 	
 	private ArrayList<Team> teamsList;
-	private PlayerJoinTeamEvent playerJoinTeamEvent;
-	private PlayerLeaveTeamEvent playerLeaveTeamEvent;
 
 	public CommandTeam(ArrayList<Team> teamsList) {
 		this.teamsList = teamsList;
@@ -33,9 +32,6 @@ public class CommandTeam implements CommandExecutor {
 			return false;
 		
 		Player player = (Player) sender;
-		
-		this.playerJoinTeamEvent = new PlayerJoinTeamEvent(player);
-		this.playerLeaveTeamEvent = new PlayerLeaveTeamEvent(player);
 		
 		if(args.length < 1) {
 			player.sendMessage(ChatColor.RED + "Invalid number of arguments -> Usage : /team <help | create <color> | remove <color> | <color> addPlayers | <color> removePlayers | <color> list>");
@@ -150,10 +146,12 @@ public class CommandTeam implements CommandExecutor {
 		
 		teamColor = teamColor.toUpperCase();
 		
+		Team teamToRemove = null;
+		
 		if(teamColor.equals(TeamColor.BLUE.toString()) || teamColor.equals(TeamColor.RED.toString()) 
 				|| teamColor.equals(TeamColor.GREEN.toString()) || teamColor.equals(TeamColor.YELLOW.toString())) {
 			
-			Team teamToRemove = new Team(Enum.valueOf(TeamColor.class, teamColor));
+			teamToRemove = new Team(Enum.valueOf(TeamColor.class, teamColor));
 			if(teamsList.contains(teamToRemove)) {
 				teamsList.remove(teamToRemove);
 				player.sendMessage(ChatColor.GREEN + "Successfully removed " + Enum.valueOf(ChatColor.class, teamColor) + teamColor + ChatColor.GREEN + " team.");
@@ -161,8 +159,18 @@ public class CommandTeam implements CommandExecutor {
 				player.sendMessage(ChatColor.RED + "No team named + " + ChatColor.BLUE + teamColor + ChatColor.RED + " were found. Type \"/team list\" to see a list of all created teams.");
 				return false;
 			}
+		} else {
+			player.sendMessage(ChatColor.RED + "This team color does not exist : " + ChatColor.YELLOW + teamColor + ChatColor.RED + ". Type \"/team help\" for further informations.");
+			return false;
 		}
-		Bukkit.getPluginManager().callEvent(playerLeaveTeamEvent); //TODO Move into a loop to remove ALL players from team
+		for(Player searchedPlayer : teamToRemove.getPlayersList()) {
+			teamToRemove.removePlayer(searchedPlayer);
+			TeamEvent teamEvent = new TeamEvent(searchedPlayer, TeamEventType.REMOVE);
+			//teamEvent.setTeam(teamToRemove); a enlever de la liste
+			//TODO Push project 28/03/2022
+			Bukkit.getPluginManager().callEvent(teamEvent);
+		}
+		
 		return true;
 	}
 
@@ -203,8 +211,9 @@ public class CommandTeam implements CommandExecutor {
 			else {
 				count ++;
 				team.addPlayer(searchedPlayer);
-				playerJoinTeamEvent.setTeam(team);
-				Bukkit.getPluginManager().callEvent(playerJoinTeamEvent); //Check package customEvents for more infos
+				TeamEvent teamEvent = new TeamEvent(searchedPlayer, TeamEventType.ADD);
+				teamEvent.setTeam(team);
+				Bukkit.getPluginManager().callEvent(teamEvent); //Check package customEvents for more infos
 			}
 		}
 		player.sendMessage(ChatColor.GREEN + "Successfully added " + ChatColor.YELLOW + count + ChatColor.GREEN + " players in " + Enum.valueOf(ChatColor.class, args[0]) + args[0] + ChatColor.GREEN + " team.");
@@ -246,8 +255,9 @@ public class CommandTeam implements CommandExecutor {
 			} else {
 				count ++;
 				team.removePlayer(searchedPlayer);
-				playerLeaveTeamEvent.setTeam(team);
-				Bukkit.getPluginManager().callEvent(playerLeaveTeamEvent); //Check package customEvents for more infos
+				TeamEvent teamEvent = new TeamEvent(searchedPlayer, TeamEventType.REMOVE);
+				teamEvent.setTeam(team);
+				Bukkit.getPluginManager().callEvent(teamEvent); //Check package customEvents for more infos
 			}
 		}
 		player.sendMessage(ChatColor.GREEN + "Successfully removed " + ChatColor.YELLOW + count + ChatColor.GREEN + " players in " 

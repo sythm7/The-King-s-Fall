@@ -1,8 +1,7 @@
-package fr.sythm.thekingsfall;
+package teamutils;
 
 import java.util.HashSet;
 import org.bukkit.entity.Player;
-import fr.sythm.utils.TeamColor;
 
 public class Team {
 
@@ -12,15 +11,6 @@ public class Team {
 	
 	public Team(TeamColor teamColor) {
 		this.teamColor = teamColor;
-	}
-	
-	public boolean equals(Object obj) {
-		if(! (obj instanceof Team)) 
-			return false;
-		
-		Team team = (Team) obj;
-		
-		return this.teamColor == team.teamColor;
 	}
 	
 	public TeamColor getTeamColor() {
@@ -41,6 +31,16 @@ public class Team {
 	
 	public int getSize() {
 		return this.playersInTeam.size();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(! (obj instanceof Team)) 
+			return false;
+		
+		Team team = (Team) obj;
+		
+		return this.teamColor == team.teamColor;
 	}
 	
 	@Override

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.TreeSet;
 import org.bukkit.entity.Player;
 
-import fr.sythm.thekingsfall.Team;
+import teamutils.Team;
 
 public class HashMapList {
 	
