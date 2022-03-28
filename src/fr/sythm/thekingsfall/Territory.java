@@ -1,10 +1,7 @@
 package fr.sythm.thekingsfall;
 
 import java.util.Set;
-
-import org.bukkit.Bukkit;
 import org.bukkit.World;
-
 import fr.sythm.utils.Couple;
 import fr.sythm.utils.Location2D;
 import fr.sythm.utils.TeamColor;

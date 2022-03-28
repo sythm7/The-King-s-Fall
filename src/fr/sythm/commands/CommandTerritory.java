@@ -86,7 +86,7 @@ public class CommandTerritory implements CommandExecutor {
 		return true;
 	}
 
-	public boolean createTerritory(Player player) {
+	private boolean createTerritory(Player player) {
 		
 		Couple<Location2D, Location2D> area = null;
 		
@@ -119,7 +119,7 @@ public class CommandTerritory implements CommandExecutor {
 		return true;
 	}
 	
-	public boolean removeTerritory(Player player, String[] args) {
+	private boolean removeTerritory(Player player, String[] args) {
 		
 		Territory territory = null;
 		
@@ -161,7 +161,7 @@ public class CommandTerritory implements CommandExecutor {
 		return true;
 	}
 	
-	public boolean displayTerritoriesList(Player player) {
+	private boolean displayTerritoriesList(Player player) {
 		
 		StringBuilder sb = new StringBuilder();
 		
@@ -184,7 +184,7 @@ public class CommandTerritory implements CommandExecutor {
 		return true;
 	}
 	
-	public boolean displayTerritory(Player player) {
+	private boolean displayTerritory(Player player) {
 		
 		Territory territory = TerritoryUtils.getTerritory(new Location2D(player.getLocation()), this.territoriesList);
 		if(territory == null) {
@@ -200,7 +200,7 @@ public class CommandTerritory implements CommandExecutor {
 		return true;
 	}
 	
-	public int getTerritoryId(Territory territory) {
+	private int getTerritoryId(Territory territory) {
 		
 		int id = 0;
 		for(Territory territory1 : this.territoriesList) {
@@ -212,7 +212,7 @@ public class CommandTerritory implements CommandExecutor {
 		return id;
 	}
 	
-	public Territory getTerritoryById(int id) {
+	private Territory getTerritoryById(int id) {
 		
 		Iterator<Territory> iterator = this.territoriesList.iterator();
 		
@@ -227,12 +227,12 @@ public class CommandTerritory implements CommandExecutor {
 		return territory;
 	}
 	
-	public String formatAreas(Location2D l1, Location2D l2) {
+	private String formatAreas(Location2D l1, Location2D l2) {
 		return "(" + l1.getFirstElement() + ", ~, " + l1.getSecondElement() + ") to "
 				+ "(" + l2.getFirstElement() + ", ~, " + l2.getSecondElement() + ")";
 	}
 	
-	public String formatCorners(Location2D[] corners) {
+	private String formatCorners(Location2D[] corners) {
 		
 		StringBuilder sb = new StringBuilder();
 		

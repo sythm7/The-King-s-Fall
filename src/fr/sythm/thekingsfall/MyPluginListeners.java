@@ -11,6 +11,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -101,15 +102,7 @@ public class MyPluginListeners implements Listener {
 			
 			deathMessage = player.getName() + " is dead somehow.";
 				
-			player.getInventory().clear();
-			player.setHealth(20.0);
-			player.setFoodLevel(20);
-			
-			player.getWorld().strikeLightningEffect(player.getLocation());
-			
-			event.setCancelled(true);
-			
-			this.makePlayerSpectate(player, deathMessage);
+			this.performPlayerDeath(event, player, deathMessage);
 		}
 	}
 	
@@ -137,20 +130,26 @@ public class MyPluginListeners implements Listener {
 					deathMessage = player.getName() + " was killed by a " + ((Entity)projectile.getShooter()).getName();
 				else
 					deathMessage = player.getName() + " is dead somehow by an entity.";
+				projectile.remove();
 			}
 			else
 				deathMessage = player.getName() + " is dead somehow by an entity.";
 			
-			player.getInventory().clear();
-			player.setHealth(20.0);
-			player.setFoodLevel(20);
-			
-			player.getWorld().strikeLightningEffect(player.getLocation());
-			
-			event.setCancelled(true);
-			
-			this.makePlayerSpectate(player, deathMessage);
+			this.performPlayerDeath(event, player, deathMessage);
 		}
+	}
+	
+	public void performPlayerDeath(Cancellable event, Player player, String deathMessage) {
+		
+		player.getInventory().clear();
+		player.setHealth(20.0);
+		player.setFoodLevel(20);
+		
+		player.getWorld().strikeLightningEffect(player.getLocation());
+		
+		event.setCancelled(true);
+		
+		this.makePlayerSpectate(player, deathMessage);
 	}
 
 	@EventHandler

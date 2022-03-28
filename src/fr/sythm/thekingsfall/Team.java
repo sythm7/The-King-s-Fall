@@ -1,9 +1,7 @@
 package fr.sythm.thekingsfall;
 
 import java.util.HashSet;
-
 import org.bukkit.entity.Player;
-
 import fr.sythm.utils.TeamColor;
 
 public class Team {
