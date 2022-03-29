@@ -1,7 +1,7 @@
 name: TheKingsFall
 version: 0.1
 author: SYTHM.
-main: fr.sythm.thekingsfall.Main
+main: fr.tkf.plugin.Main
 commands:
   heal:
     description: Heal the player.
