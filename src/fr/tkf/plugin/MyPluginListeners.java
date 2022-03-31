@@ -210,11 +210,13 @@ public class MyPluginListeners implements Listener {
 			//playersInTeam.setScore(1);
 			
 			objectiveTeamMoney.setDisplaySlot(DisplaySlot.SIDEBAR);
-			player.setScoreboard(teamScoreboard);
-		
+			//player.setScoreboard(teamScoreboard);
+
+			teamPlayer.setScoreboard(teamScoreboard);
 
 		} else if(event.getEventType().equals(TeamEventType.REMOVE)) {
-			player.setScoreboard(scoreboardManager.getNewScoreboard());
+			event.getTeam().removePlayer(player);
+			
 			
 		} else { // TEAM ELIMINATED
 			// Idk for the moment

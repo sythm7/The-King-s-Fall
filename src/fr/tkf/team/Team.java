@@ -1,6 +1,8 @@
 package fr.tkf.team;
 
 import java.util.HashSet;
+
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public class Team {
@@ -23,8 +25,9 @@ public class Team {
 	}
 	
 	public void removePlayer(Player player) {
-		
-		this.playersInTeam.remove(player);
+		TeamPlayer teamPlayer = this.getPlayer(player);
+		teamPlayer.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+		this.playersInTeam.remove(teamPlayer);
 	}
 	
 	public HashSet<Player> getPlayersList() {

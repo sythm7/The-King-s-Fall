@@ -274,7 +274,6 @@ public class CommandTeam implements CommandExecutor {
 				player.sendMessage(ChatColor.RED + "Player " + args[i] + " not found.");
 			} else {
 				count ++;
-				team.removePlayer(searchedPlayer);
 				TeamEvent teamEvent = new TeamEvent(searchedPlayer, TeamEventType.REMOVE);
 				teamEvent.setTeam(team);
 				Bukkit.getPluginManager().callEvent(teamEvent); //Check package customEvents for more infos

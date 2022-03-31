@@ -28,5 +28,6 @@ public class TeamPlayer {
 	
 	public void setScoreboard(Scoreboard scoreboard) {
 		this.scoreboard = scoreboard;
+		self.setScoreboard(scoreboard);
 	}
 }
