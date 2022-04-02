@@ -1,9 +1,6 @@
 package fr.tkf.territory;
 
 import java.util.Set;
-
-import org.bukkit.Bukkit;
-
 import fr.tkf.utils.Couple;
 import fr.tkf.utils.Location2D;
 

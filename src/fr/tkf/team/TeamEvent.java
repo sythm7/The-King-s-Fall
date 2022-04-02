@@ -13,16 +13,6 @@ public class TeamEvent extends Event implements Cancellable {
 	private boolean isCancelled;
 	private TeamEventType eventType;
 
-	
-	public static HandlerList getHandlerList() {
-		return HANDLERS;
-	}
-	
-	@Override
-	public HandlerList getHandlers() {
-		return HANDLERS;
-	}
-	
 	public TeamEvent(Player player, TeamEventType eventType) throws EnumConstantNotPresentException {
 		this.player = player;
 		this.isCancelled = false;
@@ -34,6 +24,15 @@ public class TeamEvent extends Event implements Cancellable {
 			this.eventType = TeamEventType.ELIMINATED;
 		else
 			throw new EnumConstantNotPresentException(TeamEventType.class, "Cannot initialize a TeamEventType when catching event.");
+	}
+	
+	public static HandlerList getHandlerList() {
+		return HANDLERS;
+	}
+	
+	@Override
+	public HandlerList getHandlers() {
+		return HANDLERS;
 	}
 	
 	@Override

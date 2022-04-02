@@ -1,19 +1,12 @@
 package fr.tkf.plugin;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
-
 import fr.tkf.commands.CommandHeal;
 import fr.tkf.commands.CommandSpectate;
 import fr.tkf.commands.CommandSpeed;
 import fr.tkf.commands.CommandTeam;
 import fr.tkf.commands.CommandTerritory;
-import fr.tkf.team.Team;
-import fr.tkf.territory.Territory;
 import fr.tkf.utils.UtilsAttributes;
 
 public class Main extends JavaPlugin {

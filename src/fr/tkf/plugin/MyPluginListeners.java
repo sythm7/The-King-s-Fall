@@ -1,12 +1,9 @@
 package fr.tkf.plugin;
 
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.TreeSet;
-
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -37,18 +34,17 @@ import fr.tkf.team.TeamPlayer;
 import fr.tkf.utils.Couple;
 import fr.tkf.utils.Location2D;
 import fr.tkf.utils.UtilsAttributes;
-import net.md_5.bungee.api.ChatColor;
 
 public class MyPluginListeners implements Listener {
 	
 	private HashMap<Player, Couple<Location2D, Location2D>> playersPositionsMap;
-	private HashMap<Player, Team> playersMap;
-	private EnumMap<TeamColor, TreeSet<Player>> listeJoueursTeam;
+	//private HashMap<Player, Team> playersMap;
+	//private EnumMap<TeamColor, TreeSet<Player>> listeJoueursTeam;
 	private ArrayList<Team> teamsList;
 
 	public MyPluginListeners(UtilsAttributes utilsAttr) {
 		this.playersPositionsMap = utilsAttr.getPlayersPositionsMap();
-		this.playersMap = utilsAttr.getPlayersMap();
+		//this.playersMap = utilsAttr.getPlayersMap();
 		this.teamsList = utilsAttr.getTeamsList();
 	}
 
@@ -182,7 +178,10 @@ public class MyPluginListeners implements Listener {
 	@EventHandler
 	public void onTeamPlayersChange(TeamEvent event) {
 		Player player = event.getPlayer();
-		TeamPlayer teamPlayer = event.getTeam().getPlayer(player);
+		
+		Team team = event.getTeam();
+		
+		TeamPlayer teamPlayer = team.getPlayer(player);
 		
 		Bukkit.getServer().broadcastMessage(ChatColor.GREEN + "Event catched ! " + ChatColor.DARK_PURPLE + player.getName() + ChatColor.GREEN + " data sent to TeamEvent.");
 		
@@ -193,39 +192,36 @@ public class MyPluginListeners implements Listener {
 		if(event.getEventType().equals(TeamEventType.ADD)) {
 			
 			String teamName;
-			if(event.getTeam().toString().equalsIgnoreCase("red"))
+			if(event.getTeam().getTeamColor().equals(TeamColor.RED))
 				teamName = ChatColor.RED + "Red Team";
-			else if(event.getTeam().toString().equalsIgnoreCase("blue"))
+			else if(event.getTeam().getTeamColor().equals(TeamColor.BLUE))
 				teamName = ChatColor.BLUE + "Blue Team";
-			else if(event.getTeam().toString().equalsIgnoreCase("green"))
+			else if(event.getTeam().getTeamColor().equals(TeamColor.GREEN))
 				teamName = ChatColor.GREEN + "Green Team";
 			else
 				teamName = ChatColor.YELLOW + "Yellow Team";
 			
 			Objective objectiveTeamMoney = teamScoreboard.registerNewObjective(event.getTeam().toString(), "dummy", teamName);
-			Objective objectiveTeamPlayers = teamScoreboard.registerNewObjective(player.getName(), "dummy", player.getName());
+			//Objective objectiveTeamPlayers = teamScoreboard.registerNewObjective(player.getName(), "dummy", player.getName());
 			
 			Score money = objectiveTeamMoney.getScore(ChatColor.GOLD + "Monnaie");
-			Score playersInTeam = objectiveTeamPlayers.getScore(player.getName());
+			//Score playersInTeam = objectiveTeamPlayers.getScore(player.getName());
 			
 			money.setScore(10);
 			//playersInTeam.setScore(1);
 			
 			objectiveTeamMoney.setDisplaySlot(DisplaySlot.SIDEBAR);
-			//player.setScoreboard(teamScoreboard);
 
 			teamPlayer.setScoreboard(teamScoreboard);
 
 		} else if(event.getEventType().equals(TeamEventType.REMOVE)) {
-			player.sendMessage("TeamPlayer : " + event.getTeam().getPlayer(player));
 			event.getTeam().removePlayer(player);
-			player.sendMessage("You were removed from " + event.getTeam() + " team.");
+			player.sendMessage(ChatColor.BLUE + "You were removed from " + Enum.valueOf(ChatColor.class, team.toString()) + team + " team.");
 			
 			
 		} else { // TEAM ELIMINATED
 			// Idk for the moment
 		}
-		
 		
 	}
 

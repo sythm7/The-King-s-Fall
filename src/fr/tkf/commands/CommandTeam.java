@@ -1,7 +1,6 @@
 package fr.tkf.commands;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.bukkit.Bukkit;
@@ -45,6 +44,11 @@ public class CommandTeam implements CommandExecutor {
 		else if(args[0].equals("list"))
 			return this.displayTeamList(player);
 		
+		if(args.length < 2) {
+			player.sendMessage(ChatColor.RED + this.usageMessage);
+			return false;
+		}
+		
 		if(args[0].equals("create")) {
 			
 			if(args.length == 2)
@@ -74,7 +78,11 @@ public class CommandTeam implements CommandExecutor {
 				player.sendMessage(ChatColor.RED + this.usageMessage);
 				return false;
 			}
-			
+		}
+		else {
+			player.sendMessage(ChatColor.RED + "Invalid argument " + ChatColor.YELLOW + args[1] + ChatColor.RED 
+					+ " -> Usage : /team <help | list | create <color> | remove <color> | <color> addPlayers | <color> removePlayers | <color> list>");
+			return false;
 		}
 		
 		return true;
@@ -103,23 +111,22 @@ public class CommandTeam implements CommandExecutor {
 		
 		StringBuilder sb = new StringBuilder();
 		
-		sb.append("--------------------------------\n" 
-		+ ChatColor.BLUE + "Help for /team (aka /tm) :\n");
+		String newLine = "--------------------------------\n";
 		
-		sb.append(ChatColor.AQUA + "- \"/team create <color>\" : Creates a team which is "
+		sb.append(ChatColor.BLUE + "Help for /team (aka /tm) :\n");
+		sb.append(ChatColor.AQUA + "- /team create <color> : Creates a team which is "
 				+ "represented by a <color> among 'BLUE', 'RED', 'GREEN' and 'YELLOW'.\n");
-		
-		sb.append("\"/team list\" : Display the list of all created teams.\n");
-		
-		sb.append("\"/team remove <color>\" : Removes the team represented by <color> if it exists.");
-		
-		sb.append("\"/team <color> addPlayers <player1 player2 ... playerN>\" : Adds the specified players to the team represented by <color> if possible.\n");
-		
-		sb.append("\"/team <color> removePlayers <player1 player2 ... playerN>\" : Removes the specified players from the team represented by <color> if possible.\n");
-		
-		sb.append("\"/team <color> list\" : Displays the list of the players in the team represented by <color> if it exists.\n");
-		
-		sb.append(ChatColor.WHITE + "--------------------------------\n");
+		sb.append(ChatColor.BLUE + newLine + ChatColor.AQUA);
+		sb.append("- /team list : Display the list of all created teams.\n");
+		sb.append(ChatColor.BLUE + newLine + ChatColor.AQUA);
+		sb.append("- /team remove <color> : Removes the team represented by <color> if it exists.\n");
+		sb.append(ChatColor.BLUE + newLine + ChatColor.AQUA);
+		sb.append("- /team <color> addPlayers <player1 player2 ... playerN> : Adds the specified players to the team represented by <color> if possible.\n");
+		sb.append(ChatColor.BLUE + newLine + ChatColor.AQUA);
+		sb.append("- /team <color> removePlayers <player1 player2 ... playerN> : Removes the specified players from the team represented by <color> if possible.\n");
+		sb.append(ChatColor.BLUE + newLine + ChatColor.AQUA);
+		sb.append("- /team <color> list : Displays the list of the players in the team represented by <color> if it exists.\n");
+		sb.append(ChatColor.BLUE + newLine);
 		
 		player.sendMessage(sb.toString());
 		
@@ -155,8 +162,6 @@ public class CommandTeam implements CommandExecutor {
 		
 		Team teamToRemove = null;
 		
-		List<Player> playersList = null;
-		
 		if(teamColor.equals(TeamColor.BLUE.toString()) || teamColor.equals(TeamColor.RED.toString()) 
 				|| teamColor.equals(TeamColor.GREEN.toString()) || teamColor.equals(TeamColor.YELLOW.toString())) {
 			
@@ -170,12 +175,14 @@ public class CommandTeam implements CommandExecutor {
 				player.sendMessage(ChatColor.RED + "No team named + " + ChatColor.BLUE + teamColor + ChatColor.RED + " were found. Type \"/team list\" to see a list of all created teams.");
 				return false;
 			}
-		} else {
+		}
+		
+		if(teamToRemove == null) {
 			player.sendMessage(ChatColor.RED + "This team color does not exist : " + ChatColor.YELLOW + teamColor + ChatColor.RED + ". Type \"/team help\" for further informations.");
 			return false;
-		}
+		}	
+		
 		for(Player searchedPlayer : teamToRemove.getPlayersList()) {
-			teamToRemove.removePlayer(searchedPlayer);
 			TeamEvent teamEvent = new TeamEvent(searchedPlayer, TeamEventType.REMOVE);
 			teamEvent.setTeam(teamToRemove);
 			Bukkit.getPluginManager().callEvent(teamEvent);

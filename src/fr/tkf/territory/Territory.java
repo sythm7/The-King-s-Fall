@@ -1,5 +1,6 @@
 package fr.tkf.territory;
 
+import java.util.List;
 import java.util.Set;
 import org.bukkit.World;
 
@@ -71,6 +72,6 @@ public class Territory {
 		
 		Territory territory = (Territory) obj;
 		
-		return this.areaCoordinates.equals(territory.areaCoordinates) && this.teamColor.equals(territory.teamColor);
+		return List.of(this.getTerritoryCorners()).containsAll(List.of(territory.getTerritoryCorners())) && this.teamColor.equals(territory.teamColor);
 	}
 }

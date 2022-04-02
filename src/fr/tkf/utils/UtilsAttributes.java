@@ -1,13 +1,9 @@
 package fr.tkf.utils;
 
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.TreeSet;
 import org.bukkit.entity.Player;
-
 import fr.tkf.team.Team;
 import fr.tkf.territory.Territory;
 
