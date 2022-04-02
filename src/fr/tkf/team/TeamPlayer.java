@@ -22,6 +22,11 @@ public class TeamPlayer {
 		return this.self;
 	}
 	
+	public void setSelf(Player player) {
+		this.self = player;
+		player.setScoreboard(this.scoreboard);
+	}
+	
 	public Scoreboard getScoreboard() {
 		return this.scoreboard;
 	}

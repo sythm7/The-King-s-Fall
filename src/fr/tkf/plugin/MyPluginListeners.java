@@ -65,8 +65,10 @@ public class MyPluginListeners implements Listener {
 				break;
 		}
 		
-		if(foundTeamPlayer != null)
-			player.setScoreboard(foundTeamPlayer.getScoreboard());
+		if(foundTeamPlayer != null) {
+			foundTeamPlayer.setSelf(player);
+		}
+			
 	}
 	
 	@EventHandler
@@ -215,7 +217,9 @@ public class MyPluginListeners implements Listener {
 			teamPlayer.setScoreboard(teamScoreboard);
 
 		} else if(event.getEventType().equals(TeamEventType.REMOVE)) {
+			player.sendMessage("TeamPlayer : " + event.getTeam().getPlayer(player));
 			event.getTeam().removePlayer(player);
+			player.sendMessage("You were removed from " + event.getTeam() + " team.");
 			
 			
 		} else { // TEAM ELIMINATED
