@@ -27,5 +27,4 @@ public class TerritoryEvent extends Event {
 	public TeamColor getColor() {
 		return color;
 	}
-	
 }

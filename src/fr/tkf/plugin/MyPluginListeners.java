@@ -1,7 +1,5 @@
 package fr.tkf.plugin;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -33,20 +31,9 @@ import fr.tkf.team.TeamEventType;
 import fr.tkf.team.TeamPlayer;
 import fr.tkf.utils.Couple;
 import fr.tkf.utils.Location2D;
-import fr.tkf.utils.UtilsAttributes;
+import fr.tkf.utils.Utils;
 
 public class MyPluginListeners implements Listener {
-	
-	private HashMap<Player, Couple<Location2D, Location2D>> playersPositionsMap;
-	//private HashMap<Player, Team> playersMap;
-	//private EnumMap<TeamColor, TreeSet<Player>> listeJoueursTeam;
-	private ArrayList<Team> teamsList;
-
-	public MyPluginListeners(UtilsAttributes utilsAttr) {
-		this.playersPositionsMap = utilsAttr.getPlayersPositionsMap();
-		//this.playersMap = utilsAttr.getPlayersMap();
-		this.teamsList = utilsAttr.getTeamsList();
-	}
 
 	@EventHandler
 	public void onPlayerConnect(PlayerJoinEvent event) {
@@ -55,7 +42,7 @@ public class MyPluginListeners implements Listener {
 		
 		TeamPlayer foundTeamPlayer = null;
 		
-		for(Team team : this.teamsList) {
+		for(Team team : Utils.teamsList) {
 			foundTeamPlayer = team.getPlayer(player);
 			if(foundTeamPlayer != null)
 				break;
@@ -82,10 +69,10 @@ public class MyPluginListeners implements Listener {
 		if(action.equals(Action.LEFT_CLICK_BLOCK)) {
 			Location2D location2D = new Location2D(event.getClickedBlock().getLocation());
 
-			Couple<Location2D, Location2D> locationCouple = this.playersPositionsMap.get(player);
+			Couple<Location2D, Location2D> locationCouple = Utils.playersPositionsMap.get(player);
 			
 			if(locationCouple == null)
-				this.playersPositionsMap.put(player, new Couple<>(location2D, null));
+				Utils.playersPositionsMap.put(player, new Couple<>(location2D, null));
 			else
 				locationCouple.setFirstElement(location2D);
 			
@@ -95,10 +82,10 @@ public class MyPluginListeners implements Listener {
 		else if(action.equals(Action.RIGHT_CLICK_BLOCK)) {
 			Location2D location2D = new Location2D(event.getClickedBlock().getLocation());
 
-			Couple<Location2D, Location2D> locationCouple = this.playersPositionsMap.get(player);
+			Couple<Location2D, Location2D> locationCouple = Utils.playersPositionsMap.get(player);
 			
 			if(locationCouple == null)
-				this.playersPositionsMap.put(player, new Couple<>(null, location2D));
+				Utils.playersPositionsMap.put(player, new Couple<>(null, location2D));
 			else
 				locationCouple.setSecondElement(location2D);
 			

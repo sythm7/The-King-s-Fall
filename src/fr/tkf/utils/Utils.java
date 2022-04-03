@@ -1,13 +1,24 @@
-package fr.tkf.territory;
+package fr.tkf.utils;
 
-import java.util.Set;
-import fr.tkf.utils.Couple;
-import fr.tkf.utils.Location2D;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import org.bukkit.entity.Player;
+import fr.tkf.team.Team;
+import fr.tkf.team.TeamColor;
+import fr.tkf.territory.Territory;
 
-public class TerritoryUtils {
-
+public class Utils {
 	
-	public static Territory getTerritory(Location2D location, Set<Territory> territoriesList) {
+	public static HashMap<Player, Team> playersMap = new HashMap<>(); // Pour savoir dans quelle team se trouve le joueur (?)
+	
+	public static HashMap<Player, Couple<Location2D, Location2D>> playersPositionsMap = new HashMap<>();
+	
+	public static LinkedHashSet<Territory> territoriesList = new LinkedHashSet<>();
+	
+	public static ArrayList<Team> teamsList = new ArrayList<>();
+	
+	public static Territory getTerritory(Location2D location) {
 		
 		for(Territory territory : territoriesList) {
 			
@@ -50,4 +61,16 @@ public class TerritoryUtils {
 		
 		return null;
 	}
+
+	public static Team getTeam(TeamColor color) {
+		
+		for(Team team : teamsList) {
+			if(team.getTeamColor().equals(color))
+				return team;
+		}
+		
+		return null;
+	}
+	
+			
 }

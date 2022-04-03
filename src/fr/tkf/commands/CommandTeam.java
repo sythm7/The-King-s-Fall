@@ -1,29 +1,21 @@
 package fr.tkf.commands;
 
-import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
 import fr.tkf.team.Team;
 import fr.tkf.team.TeamColor;
 import fr.tkf.team.TeamEvent;
 import fr.tkf.team.TeamEventType;
+import fr.tkf.utils.Utils;
 
 public class CommandTeam implements CommandExecutor {
 	
-	private ArrayList<Team> teamsList;
-	
 	private String usageMessage = "Invalid number of arguments -> Usage : /team <help | list | create <color> | remove <color> | <color> addPlayers | <color> removePlayers | <color> list>";
-
-	public CommandTeam(ArrayList<Team> teamsList) {
-		this.teamsList = teamsList;
-	}
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String cmdName, String[] args) {
@@ -93,7 +85,7 @@ public class CommandTeam implements CommandExecutor {
 		final StringBuilder sb = new StringBuilder();
 
 		
-		this.teamsList.forEach(team -> sb.append(Enum.valueOf(ChatColor.class, team.toString()) + team.toString() + ChatColor.AQUA + ", "));
+		Utils.teamsList.forEach(team -> sb.append(Enum.valueOf(ChatColor.class, team.toString()) + team.toString() + ChatColor.AQUA + ", "));
 		
 		if(sb.toString().isEmpty()) {
 			player.sendMessage(ChatColor.BLUE + "There are no teams to display.");
@@ -139,8 +131,8 @@ public class CommandTeam implements CommandExecutor {
 		
 		if(teamColor.equals(TeamColor.BLUE.toString()) || teamColor.equals(TeamColor.RED.toString()) || teamColor.equals(TeamColor.GREEN.toString()) || teamColor.equals(TeamColor.YELLOW.toString())) {
 			Team newTeam = new Team(Enum.valueOf(TeamColor.class, teamColor));
-			if(! teamsList.contains(newTeam)) {
-				teamsList.add(newTeam);
+			if(! Utils.teamsList.contains(newTeam)) {
+				Utils.teamsList.add(newTeam);
 				player.sendMessage(ChatColor.GREEN + "Successfully added " + Enum.valueOf(ChatColor.class, teamColor) + teamColor + ChatColor.GREEN + " team.");
 			}
 			else {
@@ -165,11 +157,11 @@ public class CommandTeam implements CommandExecutor {
 		if(teamColor.equals(TeamColor.BLUE.toString()) || teamColor.equals(TeamColor.RED.toString()) 
 				|| teamColor.equals(TeamColor.GREEN.toString()) || teamColor.equals(TeamColor.YELLOW.toString())) {
 			
-			if(teamsList.contains(new Team(Enum.valueOf(TeamColor.class, teamColor)))) {
+			if(Utils.teamsList.contains(new Team(Enum.valueOf(TeamColor.class, teamColor)))) {
 				
 				teamToRemove = this.getTeam(Enum.valueOf(TeamColor.class, teamColor));
 				
-				teamsList.remove(teamToRemove);
+				Utils.teamsList.remove(teamToRemove);
 				player.sendMessage(ChatColor.GREEN + "Successfully removed " + Enum.valueOf(ChatColor.class, teamColor) + teamColor + ChatColor.GREEN + " team.");
 			} else {
 				player.sendMessage(ChatColor.RED + "No team named + " + ChatColor.BLUE + teamColor + ChatColor.RED + " were found. Type \"/team list\" to see a list of all created teams.");
@@ -193,7 +185,7 @@ public class CommandTeam implements CommandExecutor {
 	
 	private Team getTeam(TeamColor color) {
 		
-		for(Team team : this.teamsList) {
+		for(Team team : Utils.teamsList) {
 			if(team.getTeamColor().equals(color))
 				return team;
 		}
@@ -215,7 +207,7 @@ public class CommandTeam implements CommandExecutor {
 		args[0] = args[0].toUpperCase();
 		
 		TeamColor teamColor = Enum.valueOf(TeamColor.class, args[0]);
-		for(Team teamsInList : teamsList) {
+		for(Team teamsInList : Utils.teamsList) {
 			if(teamsInList.getTeamColor().equals(teamColor)) {
 				team = teamsInList;
 				break;
@@ -263,7 +255,7 @@ public class CommandTeam implements CommandExecutor {
 		args[0] = args[0].toUpperCase();
 		
 		TeamColor teamColor = Enum.valueOf(TeamColor.class, args[0]);
-		for(Team teamsInList : teamsList) {
+		for(Team teamsInList : Utils.teamsList) {
 			if(teamsInList.getTeamColor().equals(teamColor)) {
 				team = teamsInList;
 				break;
@@ -317,7 +309,7 @@ public class CommandTeam implements CommandExecutor {
 		teamColor = teamColor.toUpperCase();
 		
 		TeamColor teamColor1 = Enum.valueOf(TeamColor.class, teamColor);
-		for(Team teamsInList : teamsList) {
+		for(Team teamsInList : Utils.teamsList) {
 			if(teamsInList.getTeamColor().equals(teamColor1)) {
 				team = teamsInList;
 				break;
@@ -351,7 +343,7 @@ public class CommandTeam implements CommandExecutor {
 	private boolean isPlayerInTeam(Player player) {
 		
 		AtomicBoolean isInTeam = new AtomicBoolean(false);
-		teamsList.forEach(team -> {
+		Utils.teamsList.forEach(team -> {
 			if(team.getPlayersList().contains(player)) {
 				isInTeam.set(true);
 				return;

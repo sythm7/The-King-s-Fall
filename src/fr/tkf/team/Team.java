@@ -5,11 +5,15 @@ import java.util.HashSet;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import fr.tkf.territory.Territory;
+
 public class Team {
 
 	private TeamColor teamColor = TeamColor.NONE;
 	
 	private HashSet<TeamPlayer> playersInTeam = new HashSet<>();
+	
+	private HashSet<Territory> ownedTerritories = new HashSet<>();
 	
 	public Team(TeamColor teamColor) {
 		this.teamColor = teamColor;
@@ -51,6 +55,20 @@ public class Team {
 	
 	public int getSize() {
 		return this.playersInTeam.size();
+	}
+	
+	public boolean manuallyAddTerritory(Territory territory) {
+		if(! this.ownedTerritories.isEmpty()) {
+			return false;
+		}
+		
+		this.ownedTerritories.add(territory);
+		
+		return true;
+	}
+	
+	public void manuallyRemoveTerritory(Territory territory) {
+		this.ownedTerritories.remove(territory);
 	}
 	
 	@Override

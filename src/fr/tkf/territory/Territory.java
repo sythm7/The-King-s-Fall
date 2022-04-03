@@ -1,12 +1,11 @@
 package fr.tkf.territory;
 
 import java.util.List;
-import java.util.Set;
 import org.bukkit.World;
-
 import fr.tkf.team.TeamColor;
 import fr.tkf.utils.Couple;
 import fr.tkf.utils.Location2D;
+import fr.tkf.utils.Utils;
 
 public class Territory {
 
@@ -35,10 +34,10 @@ public class Territory {
 		this.teamColor = teamColor;
 	}
 	
-	public boolean isOverlapping(Set<Territory> territoriesList) {
+	public boolean isOverlapping() {
 		
 		for(Location2D location : this.getTerritoryCorners()) {
-			if(TerritoryUtils.getTerritory(location, territoriesList) != null)
+			if(Utils.getTerritory(location) != null)
 				return true;
 		}
 		

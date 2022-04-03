@@ -7,11 +7,8 @@ import fr.tkf.commands.CommandSpectate;
 import fr.tkf.commands.CommandSpeed;
 import fr.tkf.commands.CommandTeam;
 import fr.tkf.commands.CommandTerritory;
-import fr.tkf.utils.UtilsAttributes;
 
 public class Main extends JavaPlugin {
-
-	private UtilsAttributes utilsAttributes = new UtilsAttributes();
 	
 	private static Main instance;
 	
@@ -21,11 +18,11 @@ public class Main extends JavaPlugin {
 		instance = this;
 		
 		this.getCommand("heal").setExecutor(new CommandHeal());
-		this.getCommand("team").setExecutor(new CommandTeam(utilsAttributes.getTeamsList()));
+		this.getCommand("team").setExecutor(new CommandTeam());
 		this.getCommand("speed").setExecutor(new CommandSpeed());
 		this.getCommand("spectate").setExecutor(new CommandSpectate());
-		this.getCommand("territory").setExecutor(new CommandTerritory(this.utilsAttributes));
-		this.getServer().getPluginManager().registerEvents(new MyPluginListeners(this.utilsAttributes), this);
+		this.getCommand("territory").setExecutor(new CommandTerritory());
+		this.getServer().getPluginManager().registerEvents(new MyPluginListeners(), this);
 	}
 
 	@Override

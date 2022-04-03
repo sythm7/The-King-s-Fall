@@ -1,34 +1,21 @@
 package fr.tkf.commands;
 
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import fr.tkf.team.Team;
 import fr.tkf.team.TeamColor;
 import fr.tkf.territory.Territory;
-import fr.tkf.territory.TerritoryUtils;
 import fr.tkf.utils.Couple;
-import fr.tkf.utils.UtilsAttributes;
+import fr.tkf.utils.Utils;
 import fr.tkf.utils.Location2D;
 
 public class CommandTerritory implements CommandExecutor {
 	
-	private Map<Player, Couple<Location2D, Location2D>> playersPositionsMap = new HashMap<>();
-	
-	private Set<Territory> territoriesList = new LinkedHashSet<>();
-	
 	private String commandUsage = "-> Usage : /territory <help | create | setTeam | remove | get | list>";
-
-	public CommandTerritory(UtilsAttributes utilsAttr) {
-		this.playersPositionsMap = utilsAttr.getPlayersPositionsMap();
-		this.territoriesList = utilsAttr.getTerritoriesList();
-	}
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String cmdName, String[] args) {
@@ -73,7 +60,7 @@ public class CommandTerritory implements CommandExecutor {
 				+ "and right click to choose the second position of the area.\n");
 		sb.append(ChatColor.BLUE + newLine + ChatColor.AQUA);
 		sb.append(ChatColor.AQUA + "- /territory setTeam <color> [ID] : (see \"/team help\" for <color>, NONE = no color). If [ID] is not specified. Assigns the team represented by <color> to the territory at your location. "
-				+ "Else, assigns the team to the territory corresponding to [ID].");
+				+ "Else, assigns the team to the territory corresponding to [ID].\n");
 		sb.append(ChatColor.BLUE + newLine + ChatColor.AQUA);
 		sb.append("- /territory remove [ID] : [ID] is optional. If [ID] is not specified, removes the territory situated at your location. "
 				+ "Else, removes the territory determined by [ID]\n");
@@ -94,8 +81,8 @@ public class CommandTerritory implements CommandExecutor {
 		
 		Couple<Location2D, Location2D> area = null;
 		
-		if(this.playersPositionsMap.get(player) != null)
-			area = new Couple<>(this.playersPositionsMap.get(player).getFirstElement(), this.playersPositionsMap.get(player).getSecondElement());
+		if(Utils.playersPositionsMap.get(player) != null)
+			area = new Couple<>(Utils.playersPositionsMap.get(player).getFirstElement(), Utils.playersPositionsMap.get(player).getSecondElement());
 		
 		if(area == null || area.getFirstElement() == null || area.getSecondElement() == null) {
 			player.sendMessage(ChatColor.RED + "You need to select an area first !");
@@ -104,12 +91,12 @@ public class CommandTerritory implements CommandExecutor {
 		
 		Territory territory = new Territory(area);
 				
-		if(territory.isOverlapping(territoriesList)) {
+		if(territory.isOverlapping()) {
 			player.sendMessage(ChatColor.RED + "This area is overlapping another territory : territory not created.\nType '/territory list' to show a list of all created territories.");
 			return false;
 		}
 		
-		this.territoriesList.add(territory);
+		Utils.territoriesList.add(territory);
 		
 		player.sendMessage(ChatColor.GREEN + "New territory successfully created from " + ChatColor.WHITE + this.formatAreas(area.getFirstElement(), area.getSecondElement()) + ChatColor.GREEN + ".");
 
@@ -118,36 +105,35 @@ public class CommandTerritory implements CommandExecutor {
 	
 	private boolean setTeam(Player player, String[] args) {
 		
-		//TODO CALL TERRITORYEVENT AND VERIFY IF TEAM WITH SPECIFIED TEAMCOLOR EXISTS
-		
 		TeamColor color = null;
 		
 		Territory territory = null;
 		
 		if(! (args[1].equalsIgnoreCase("red") || args[1].equalsIgnoreCase("blue") || args[1].equalsIgnoreCase("green") || args[1].equalsIgnoreCase("yellow") || args[1].equalsIgnoreCase("none"))) {
-			player.sendMessage("Invalid team " + args[1] + ". Type \"/team list\" to see the list of all created teams.");
+			player.sendMessage(ChatColor.RED + "Invalid team " + args[1] + ". Type \"/team list\" to see the list of all created teams.");
 			return false;
 		}
 		
 		color = Enum.valueOf(TeamColor.class, args[1].toUpperCase());
 		
 		if(args.length == 2) {
-			territory = TerritoryUtils.getTerritory(new Location2D(player.getLocation()), territoriesList);
-			territory.setTeamColor(color);
+			territory = Utils.getTerritory(new Location2D(player.getLocation()));
+			if(territory == null) {
+				player.sendMessage(ChatColor.RED + "You are not in a territory !");
+				return false;
+			}
 		}
 		else if(args.length == 3) {
 			try {
-				int id = Integer.valueOf(args[1]);
+				int id = Integer.valueOf(args[2]);
 				
 				territory = this.getTerritoryById(id);
 				
 				if(territory == null)
 					throw new NumberFormatException();
-				
-				territory.setTeamColor(color);
 			}
 			catch(NumberFormatException nbfException) {
-				player.sendMessage(ChatColor.RED + "Wrong argument '"+ args[1] + "' -> Usage : \"/territory setTeam \"" + color + " OR \"/territory setTeam" + color + " <ID>\" "
+				player.sendMessage(ChatColor.RED + "Wrong argument '"+ args[1] + "' -> Usage : \"/territory setTeam \"" + color + " OR \"/territory setTeam " + color + " <ID>\" "
 						+ "with ID the territory's ID among the territories displayed in \"/territory list\".");
 				return false;
 			}
@@ -157,9 +143,50 @@ public class CommandTerritory implements CommandExecutor {
 			return false;
 		}
 		
-		player.sendMessage(ChatColor.GREEN + "Successfully set " + color + " team to territory " + this.getTerritoryId(territory) + ".");
-		//TerritoryEvent event = new TerritoryEvent();
+		if(color != TeamColor.NONE && ! Utils.teamsList.contains(new Team(color))) {
+			player.sendMessage(ChatColor.RED + "Team " + color + " does not exist. You can create it with \"/team create " + color + "\".");
+			return false;
+		}
 		
+		Team team = null;
+		
+		if(color.equals(TeamColor.NONE)) {
+			if(territory.getTeamColor().equals(TeamColor.NONE)) {
+				player.sendMessage(ChatColor.RED + "Can't remove team from territory " + this.getTerritoryId(territory) + " (territory has no team).");
+				return false;
+			}
+			
+			team = Utils.getTeam(territory.getTeamColor());
+			
+			team.manuallyRemoveTerritory(territory);
+			
+			player.sendMessage(ChatColor.GREEN + "Successfully removed team from territory " + this.getTerritoryId(territory) + ".");
+		}
+		else {
+			
+			String message = "Successfully set ";
+			
+			TeamColor territoryColor = territory.getTeamColor();
+			
+			if(! territoryColor.equals(TeamColor.NONE)) {
+				team = Utils.getTeam(territoryColor);
+				team.manuallyRemoveTerritory(territory);
+				message = "Successfully removed " + team + " team and set ";
+			}
+			
+			team = Utils.getTeam(color);
+			boolean isAdded = team.manuallyAddTerritory(territory);
+			
+			if(! isAdded) {
+				player.sendMessage(ChatColor.RED + "Team " + team + " already owns a territory. Team not set to this territory.");
+				return false;
+			}
+			
+			player.sendMessage(ChatColor.GREEN + message + color + " team to territory " + this.getTerritoryId(territory) + ".");
+		}
+		
+		territory.setTeamColor(color);
+
 		return true;
 	}
 	
@@ -168,7 +195,7 @@ public class CommandTerritory implements CommandExecutor {
 		Territory territory = null;
 		
 		if(args.length == 1)
-			territory = TerritoryUtils.getTerritory(new Location2D(player.getLocation()), this.territoriesList);
+			territory = Utils.getTerritory(new Location2D(player.getLocation()));
 		else if(args.length == 2) {
 			try {
 				int id = Integer.valueOf(args[1]);
@@ -197,7 +224,7 @@ public class CommandTerritory implements CommandExecutor {
 			return false;
 		}
 		
-		this.territoriesList.remove(territory);
+		Utils.territoriesList.remove(territory);
 		
 		player.sendMessage(ChatColor.GREEN + "Territory with the " + ChatColor.GOLD + "ID (" + this.getTerritoryId(territory) + ")" + ChatColor.GREEN + " and with the corners : " + 
 		ChatColor.BLUE + this.formatCorners(territory.getTerritoryCorners()) + ChatColor.GREEN + " succesfully removed.");
@@ -211,7 +238,7 @@ public class CommandTerritory implements CommandExecutor {
 		
 		int id = 0;
 		
-		for(Territory territory : this.territoriesList) {
+		for(Territory territory : Utils.territoriesList) {
 			
 			Location2D[] corners = territory.getTerritoryCorners();
 			
@@ -223,7 +250,7 @@ public class CommandTerritory implements CommandExecutor {
 		}
 		
 		if(sb.toString().isEmpty()) {
-			player.sendMessage(ChatColor.BLUE + "There is no territory to display.");
+			player.sendMessage(ChatColor.BLUE + "There are no territories to display.");
 			return false;
 		}
 		
@@ -234,7 +261,7 @@ public class CommandTerritory implements CommandExecutor {
 	
 	private boolean displayTerritory(Player player) {
 		
-		Territory territory = TerritoryUtils.getTerritory(new Location2D(player.getLocation()), this.territoriesList);
+		Territory territory = Utils.getTerritory(new Location2D(player.getLocation()));
 		if(territory == null) {
 			player.sendMessage(ChatColor.RED + "You are not in a territory !");
 			return false;
@@ -244,7 +271,7 @@ public class CommandTerritory implements CommandExecutor {
 		
 		String teamColor = territory.getTeamColor().toString().replaceFirst("NONE", "GRAY");
 		
-		player.sendMessage(ChatColor.GREEN + "You are currently in the territory with the " + ChatColor.GOLD + "ID (" + this.getTerritoryId(territory) + "), " + ChatColor.DARK_PURPLE + 
+		player.sendMessage(ChatColor.GREEN + "You are currently in the territory with the " + ChatColor.GOLD + "ID (" + this.getTerritoryId(territory) + ")" + ChatColor.GREEN + ", " + ChatColor.DARK_PURPLE + 
 				"Team = " + Enum.valueOf(ChatColor.class, teamColor) + teamColor.replaceFirst("GRAY", "NONE") + ChatColor.GREEN + ", and with corners coordinates : " + ChatColor.AQUA + this.formatCorners(corners));
 		
 		return true;
@@ -253,7 +280,7 @@ public class CommandTerritory implements CommandExecutor {
 	private int getTerritoryId(Territory territory) {
 		
 		int id = 0;
-		for(Territory territory1 : this.territoriesList) {
+		for(Territory territory1 : Utils.territoriesList) {
 			if(territory1.equals(territory))
 				break;
 			id++;
@@ -264,7 +291,7 @@ public class CommandTerritory implements CommandExecutor {
 	
 	private Territory getTerritoryById(int id) {
 		
-		Iterator<Territory> iterator = this.territoriesList.iterator();
+		Iterator<Territory> iterator = Utils.territoriesList.iterator();
 		
 		Territory territory = null;
 		
@@ -273,6 +300,9 @@ public class CommandTerritory implements CommandExecutor {
 			territory = iterator.next();
 			loopId++;
 		}
+		
+		if(loopId != id + 1)
+			return null;
 
 		return territory;
 	}
