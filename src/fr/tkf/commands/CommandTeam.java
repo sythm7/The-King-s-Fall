@@ -11,6 +11,7 @@ import fr.tkf.team.Team;
 import fr.tkf.team.TeamColor;
 import fr.tkf.team.TeamEvent;
 import fr.tkf.team.TeamEventType;
+import fr.tkf.territory.Territory;
 import fr.tkf.utils.Utils;
 
 public class CommandTeam implements CommandExecutor {
@@ -178,7 +179,12 @@ public class CommandTeam implements CommandExecutor {
 		if(teamToRemove == null) {
 			player.sendMessage(ChatColor.RED + "This team color does not exist : " + ChatColor.YELLOW + teamColor + ChatColor.RED + ". Type \"/team help\" for further informations.");
 			return false;
-		}	
+		}
+		
+		for(Territory territory : Utils.territoriesList) {
+			if(territory.getTeamColor().equals(TeamColor.BLUE))
+				territory.setTeamColor(TeamColor.NONE);
+		}
 		
 		for(Player searchedPlayer : teamToRemove.getPlayersList()) {
 			TeamEvent teamEvent = new TeamEvent(searchedPlayer, TeamEventType.REMOVE);
