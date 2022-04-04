@@ -84,17 +84,23 @@ public class CommandTeam implements CommandExecutor {
 		
 		final StringBuilder sb = new StringBuilder();
 
-		
-		Utils.teamsList.forEach(team -> sb.append(Enum.valueOf(ChatColor.class, team.toString()) + team.toString() + ChatColor.AQUA + ", "));
+		Utils.teamsList.forEach(team -> {
+			final StringBuilder sb1 = new StringBuilder();
+			System.out.println("team = " + team);
+			sb.append("\n" + Enum.valueOf(ChatColor.class, team.toString()) + team.toString());
+			if(! team.getOwnedTerritories().isEmpty()) {
+				sb.append(ChatColor.AQUA + "  -  Territories : ");
+				team.getOwnedTerritories().forEach(territory -> sb1.append(ChatColor.GOLD + "" + Utils.getTerritoryId(territory) + "" + ChatColor.AQUA + ", "));
+				sb.append(sb1.substring(0, sb1.length() - 2));
+			}
+		});
 		
 		if(sb.toString().isEmpty()) {
 			player.sendMessage(ChatColor.BLUE + "There are no teams to display.");
 			return false;
 		}
 		
-		String message = sb.substring(0, sb.length() - 2);
-		
-		player.sendMessage(ChatColor.AQUA + "List of all created teams :\n" + ChatColor.AQUA + message);
+		player.sendMessage(ChatColor.AQUA + "List of all created teams :" + ChatColor.AQUA + sb);
 		
 		return true;
 	}
@@ -159,7 +165,7 @@ public class CommandTeam implements CommandExecutor {
 			
 			if(Utils.teamsList.contains(new Team(Enum.valueOf(TeamColor.class, teamColor)))) {
 				
-				teamToRemove = this.getTeam(Enum.valueOf(TeamColor.class, teamColor));
+				teamToRemove = Utils.getTeam(Enum.valueOf(TeamColor.class, teamColor));
 				
 				Utils.teamsList.remove(teamToRemove);
 				player.sendMessage(ChatColor.GREEN + "Successfully removed " + Enum.valueOf(ChatColor.class, teamColor) + teamColor + ChatColor.GREEN + " team.");
@@ -181,16 +187,6 @@ public class CommandTeam implements CommandExecutor {
 		}
 		
 		return true;
-	}
-	
-	private Team getTeam(TeamColor color) {
-		
-		for(Team team : Utils.teamsList) {
-			if(team.getTeamColor().equals(color))
-				return team;
-		}
-		
-		return null;	
 	}
 
 	private boolean addPlayers(Player player, String[] args) {

@@ -1,10 +1,10 @@
 package fr.tkf.team;
 
+import java.util.ArrayList;
 import java.util.HashSet;
-
+import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-
 import fr.tkf.territory.Territory;
 
 public class Team {
@@ -13,7 +13,7 @@ public class Team {
 	
 	private HashSet<TeamPlayer> playersInTeam = new HashSet<>();
 	
-	private HashSet<Territory> ownedTerritories = new HashSet<>();
+	private ArrayList<Territory> ownedTerritories = new ArrayList<>();
 	
 	public Team(TeamColor teamColor) {
 		this.teamColor = teamColor;
@@ -68,7 +68,15 @@ public class Team {
 	}
 	
 	public void manuallyRemoveTerritory(Territory territory) {
+		System.out.print("Liste = ");
+		this.ownedTerritories.forEach(ter -> System.out.println(ter.hashCode()));
+		System.out.println("Ter = " + territory.hashCode());
 		this.ownedTerritories.remove(territory);
+		this.ownedTerritories.contains(territory);
+	}
+	
+	public List<Territory> getOwnedTerritories() {
+		return this.ownedTerritories;
 	}
 	
 	@Override

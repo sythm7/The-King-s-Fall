@@ -72,5 +72,17 @@ public class Utils {
 		return null;
 	}
 	
+	public static int getTerritoryId(Territory territory) {
+		
+		int id = 0;
+		for(Territory territory1 : Utils.territoriesList) {
+			if(territory1.equals(territory))
+				break;
+			id++;
+		}
+		
+		return id;
+	}
+	
 			
 }

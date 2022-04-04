@@ -152,7 +152,7 @@ public class CommandTerritory implements CommandExecutor {
 		
 		if(color.equals(TeamColor.NONE)) {
 			if(territory.getTeamColor().equals(TeamColor.NONE)) {
-				player.sendMessage(ChatColor.RED + "Can't remove team from territory " + this.getTerritoryId(territory) + " (territory has no team).");
+				player.sendMessage(ChatColor.RED + "Can't remove team from territory " + Utils.getTerritoryId(territory) + " (territory has no team).");
 				return false;
 			}
 			
@@ -160,7 +160,7 @@ public class CommandTerritory implements CommandExecutor {
 			
 			team.manuallyRemoveTerritory(territory);
 			
-			player.sendMessage(ChatColor.GREEN + "Successfully removed team from territory " + this.getTerritoryId(territory) + ".");
+			player.sendMessage(ChatColor.GREEN + "Successfully removed team from territory " + Utils.getTerritoryId(territory) + ".");
 		}
 		else {
 			
@@ -182,7 +182,7 @@ public class CommandTerritory implements CommandExecutor {
 				return false;
 			}
 			
-			player.sendMessage(ChatColor.GREEN + message + color + " team to territory " + this.getTerritoryId(territory) + ".");
+			player.sendMessage(ChatColor.GREEN + message + color + " team to territory " + Utils.getTerritoryId(territory) + ".");
 		}
 		
 		territory.setTeamColor(color);
@@ -226,7 +226,7 @@ public class CommandTerritory implements CommandExecutor {
 		
 		Utils.territoriesList.remove(territory);
 		
-		player.sendMessage(ChatColor.GREEN + "Territory with the " + ChatColor.GOLD + "ID (" + this.getTerritoryId(territory) + ")" + ChatColor.GREEN + " and with the corners : " + 
+		player.sendMessage(ChatColor.GREEN + "Territory with the " + ChatColor.GOLD + "ID (" + Utils.getTerritoryId(territory) + ")" + ChatColor.GREEN + " and with the corners : " + 
 		ChatColor.BLUE + this.formatCorners(territory.getTerritoryCorners()) + ChatColor.GREEN + " succesfully removed.");
 		
 		return true;
@@ -271,22 +271,10 @@ public class CommandTerritory implements CommandExecutor {
 		
 		String teamColor = territory.getTeamColor().toString().replaceFirst("NONE", "GRAY");
 		
-		player.sendMessage(ChatColor.GREEN + "You are currently in the territory with the " + ChatColor.GOLD + "ID (" + this.getTerritoryId(territory) + ")" + ChatColor.GREEN + ", " + ChatColor.DARK_PURPLE + 
+		player.sendMessage(ChatColor.GREEN + "You are currently in the territory with the " + ChatColor.GOLD + "ID (" + Utils.getTerritoryId(territory) + ")" + ChatColor.GREEN + ", " + ChatColor.DARK_PURPLE + 
 				"Team = " + Enum.valueOf(ChatColor.class, teamColor) + teamColor.replaceFirst("GRAY", "NONE") + ChatColor.GREEN + ", and with corners coordinates : " + ChatColor.AQUA + this.formatCorners(corners));
 		
 		return true;
-	}
-	
-	private int getTerritoryId(Territory territory) {
-		
-		int id = 0;
-		for(Territory territory1 : Utils.territoriesList) {
-			if(territory1.equals(territory))
-				break;
-			id++;
-		}
-		
-		return id;
 	}
 	
 	private Territory getTerritoryById(int id) {
