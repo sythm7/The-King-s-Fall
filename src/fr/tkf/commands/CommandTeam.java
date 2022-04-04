@@ -89,7 +89,7 @@ public class CommandTeam implements CommandExecutor {
 			System.out.println("team = " + team);
 			sb.append("\n" + Enum.valueOf(ChatColor.class, team.toString()) + team.toString());
 			if(! team.getOwnedTerritories().isEmpty()) {
-				sb.append(ChatColor.AQUA + "  -  Territories : ");
+				sb.append(ChatColor.AQUA + "  -  Territories ID : ");
 				team.getOwnedTerritories().forEach(territory -> sb1.append(ChatColor.GOLD + "" + Utils.getTerritoryId(territory) + "" + ChatColor.AQUA + ", "));
 				sb.append(sb1.substring(0, sb1.length() - 2));
 			}
