@@ -224,6 +224,9 @@ public class CommandTerritory implements CommandExecutor {
 			return false;
 		}
 		
+		if(! territory.getTeamColor().equals(TeamColor.NONE))
+			Utils.getTeam(territory.getTeamColor()).manuallyRemoveTerritory(territory);
+		
 		Utils.territoriesList.remove(territory);
 		
 		player.sendMessage(ChatColor.GREEN + "Territory with the " + ChatColor.GOLD + "ID (" + Utils.getTerritoryId(territory) + ")" + ChatColor.GREEN + " and with the corners : " + 

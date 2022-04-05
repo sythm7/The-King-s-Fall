@@ -2,7 +2,6 @@ package fr.tkf.utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import org.bukkit.entity.Player;
 import fr.tkf.team.Team;
 import fr.tkf.team.TeamColor;
@@ -14,7 +13,7 @@ public class Utils {
 	
 	public static HashMap<Player, Couple<Location2D, Location2D>> playersPositionsMap = new HashMap<>();
 	
-	public static LinkedHashSet<Territory> territoriesList = new LinkedHashSet<>();
+	public static ArrayList<Territory> territoriesList = new ArrayList<>();
 	
 	public static ArrayList<Team> teamsList = new ArrayList<>();
 	
